@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bram>
+  <program>Aris</program>
+  <version>0.1.0</version>
+  <metadata>
+    <author>ARIS-YEW-UI</author>
+    <hash>HnQ3Eh4AXYxsWLJQqLd8MdBgfG0PY39CiyqViOeSIww=</hash>
+  </metadata>
+  <proof id="0">
+    <assumption linenum="0">
+      <raw>((A ↔ (B ∨ A)) ∧ (B ↔ ¬A))</raw>
+    </assumption>
+    <step linenum="1">
+      <raw>(((A ∧ (B ∨ A)) ∨ (¬A ∧ ¬((B ∨ A)))) ∧ (B ↔ ¬A))</raw>
+      <rule>BICONDITIONAL_EQUIVALENCE</rule>
+      <premise>0</premise>
+    </step>
+    <step linenum="2">
+      <raw>(((A ∧ (B ∨ A)) ∨ (¬A ∧ ¬((B ∨ A)))) ∧ ((B ∧ ¬A) ∨ (¬B ∧ ¬¬A)))</raw>
+      <rule>BICONDITIONAL_EQUIVALENCE</rule>
+      <premise>1</premise>
+    </step>
+    <step linenum="3">
+      <raw>(((A ∧ (B ∨ A)) ∨ (¬A ∧ ¬((B ∨ A)))) ∧ ((B ∧ ¬A) ∨ (¬B ∧ A)))</raw>
+      <rule>DOUBLENEGATION_EQUIV</rule>
+      <premise>2</premise>
+    </step>
+    <step linenum="4">
+      <raw>((A ∨ (¬A ∧ ¬((B ∨ A)))) ∧ ((B ∧ ¬A) ∨ (¬B ∧ A)))</raw>
+      <rule>ABSORPTION</rule>
+      <premise>3</premise>
+    </step>
+    <step linenum="5">
+      <raw>((A ∨ (¬A ∧ (¬B ∧ ¬A))) ∧ ((B ∧ ¬A) ∨ (¬B ∧ A)))</raw>
+      <rule>DE_MORGAN</rule>
+      <premise>4</premise>
+    </step>
+    <step linenum="6">
+      <raw>((A ∨ (¬B ∧ ¬A)) ∧ ((B ∧ ¬A) ∨ (¬B ∧ A)))</raw>
+      <rule>ABSORPTION</rule>
+      <premise>5</premise>
+    </step>
+    <step linenum="7">
+      <raw>(((A ∨ ¬B) ∧ (A ∨ ¬A)) ∧ ((B ∧ ¬A) ∨ (¬B ∧ A)))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>6</premise>
+    </step>
+    <step linenum="8">
+      <raw>(((A ∨ ¬B) ∧ (A ∨ ¬A)) ∧ ((B ∨ (¬B ∧ A)) ∧ (¬A ∨ (¬B ∧ A))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>7</premise>
+    </step>
+    <step linenum="9">
+      <raw>(((A ∨ ¬B) ∧ (A ∨ ¬A)) ∧ (((B ∨ ¬B) ∧ (B ∨ A)) ∧ (¬A ∨ (¬B ∧ A))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>8</premise>
+    </step>
+    <step linenum="10">
+      <raw>(((A ∨ ¬B) ∧ (A ∨ ¬A)) ∧ (((B ∨ ¬B) ∧ (B ∨ A)) ∧ ((¬A ∨ ¬B) ∧ (¬A ∨ A))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>9</premise>
+    </step>
+    <step linenum="11">
+      <raw>(((A ∨ ¬B) ∧ ⊤) ∧ (((B ∨ ¬B) ∧ (B ∨ A)) ∧ ((¬A ∨ ¬B) ∧ (¬A ∨ A))))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>10</premise>
+    </step>
+    <step linenum="12">
+      <raw>(((A ∨ ¬B) ∧ ⊤) ∧ ((⊤ ∧ (B ∨ A)) ∧ ((¬A ∨ ¬B) ∧ (¬A ∨ A))))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>11</premise>
+    </step>
+    <step linenum="13">
+      <raw>(((A ∨ ¬B) ∧ ⊤) ∧ ((⊤ ∧ (B ∨ A)) ∧ ((¬A ∨ ¬B) ∧ ⊤)))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>12</premise>
+    </step>
+    <step linenum="14">
+      <raw>((A ∨ ¬B) ∧ ((⊤ ∧ (B ∨ A)) ∧ ((¬A ∨ ¬B) ∧ ⊤)))</raw>
+      <rule>IDENTITY</rule>
+      <premise>13</premise>
+    </step>
+    <step linenum="15">
+      <raw>((A ∨ ¬B) ∧ ((B ∨ A) ∧ ((¬A ∨ ¬B) ∧ ⊤)))</raw>
+      <rule>IDENTITY</rule>
+      <premise>14</premise>
+    </step>
+    <step linenum="16">
+      <raw>((A ∨ ¬B) ∧ ((B ∨ A) ∧ (¬A ∨ ¬B)))</raw>
+      <rule>IDENTITY</rule>
+      <premise>15</premise>
+    </step>
+    <step linenum="17">
+      <raw>(((A ∨ ¬B) ∧ (B ∨ A)) ∧ (¬A ∨ ¬B))</raw>
+      <rule>ASSOCIATION</rule>
+      <premise>16</premise>
+    </step>
+    <step linenum="18">
+      <raw>(((¬B ∨ A) ∧ (B ∨ A)) ∧ (¬A ∨ ¬B))</raw>
+      <rule>COMMUTATION</rule>
+      <premise>17</premise>
+    </step>
+    <step linenum="19">
+      <raw>((A ∨ (¬B ∧ B)) ∧ (¬A ∨ ¬B))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>18</premise>
+    </step>
+    <step linenum="20">
+      <raw>((A ∨ ⊥) ∧ (¬A ∨ ¬B))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>19</premise>
+    </step>
+    <step linenum="21">
+      <raw>(A ∧ (¬A ∨ ¬B))</raw>
+      <rule>IDENTITY</rule>
+      <premise>20</premise>
+    </step>
+    <step linenum="22">
+      <raw>((A ∧ ¬A) ∨ (A ∧ ¬B))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>21</premise>
+    </step>
+    <step linenum="23">
+      <raw>(⊥ ∨ (A ∧ ¬B))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>22</premise>
+    </step>
+    <step linenum="24">
+      <raw>(A ∧ ¬B)</raw>
+      <rule>IDENTITY</rule>
+      <premise>23</premise>
+    </step>
+  </proof>
+</bram>

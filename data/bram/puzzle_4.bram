@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bram>
+  <program>Aris</program>
+  <version>0.1.0</version>
+  <metadata>
+    <author>ARIS-YEW-UI</author>
+    <hash>ov1SsAABfQxZXW0O//hteW9M6hIPiW/PCbkyBOuOSTw=</hash>
+  </metadata>
+  <proof id="0">
+    <assumption linenum="0">
+      <raw>((A ↔ ¬((A ↔ B))) ∧ (B ↔ ¬((B ↔ A))))</raw>
+    </assumption>
+    <step linenum="1">
+      <raw>(((A ∧ ¬((A ↔ B))) ∨ (¬A ∧ ¬(¬((A ↔ B))))) ∧ (B ↔ ¬((B ↔ A))))</raw>
+      <rule>BICONDITIONAL_EQUIVALENCE</rule>
+      <premise>0</premise>
+    </step>
+    <step linenum="2">
+      <raw>(((A ∧ ¬(((A ∧ B) ∨ (¬A ∧ ¬B)))) ∨ (¬A ∧ ¬(¬((A ↔ B))))) ∧ (B ↔ ¬((B ↔ A))))</raw>
+      <rule>BICONDITIONAL_EQUIVALENCE</rule>
+      <premise>1</premise>
+    </step>
+    <step linenum="3">
+      <raw>(((A ∧ ¬(((A ∧ B) ∨ (¬A ∧ ¬B)))) ∨ (¬A ∧ ¬(¬(((A ∧ B) ∨ (¬A ∧ ¬B)))))) ∧ (B ↔ ¬((B ↔ A))))</raw>
+      <rule>BICONDITIONAL_EQUIVALENCE</rule>
+      <premise>2</premise>
+    </step>
+    <step linenum="4">
+      <raw>(((A ∧ ¬(((A ∧ B) ∨ (¬A ∧ ¬B)))) ∨ (¬A ∧ ¬(¬(((A ∧ B) ∨ (¬A ∧ ¬B)))))) ∧ ((B ∧ ¬((B ↔ A))) ∨ (¬B ∧ ¬(¬((B ↔ A))))))</raw>
+      <rule>BICONDITIONAL_EQUIVALENCE</rule>
+      <premise>3</premise>
+    </step>
+    <step linenum="5">
+      <raw>(((A ∧ ¬(((A ∧ B) ∨ (¬A ∧ ¬B)))) ∨ (¬A ∧ ¬(¬(((A ∧ B) ∨ (¬A ∧ ¬B)))))) ∧ ((B ∧ ¬(((B ∧ A) ∨ (¬B ∧ ¬A)))) ∨ (¬B ∧ ¬(¬((B ↔ A))))))</raw>
+      <rule>BICONDITIONAL_EQUIVALENCE</rule>
+      <premise>4</premise>
+    </step>
+    <step linenum="6">
+      <raw>(((A ∧ ¬(((A ∧ B) ∨ (¬A ∧ ¬B)))) ∨ (¬A ∧ ¬(¬(((A ∧ B) ∨ (¬A ∧ ¬B)))))) ∧ ((B ∧ ¬(((B ∧ A) ∨ (¬B ∧ ¬A)))) ∨ (¬B ∧ ¬(¬(((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>BICONDITIONAL_EQUIVALENCE</rule>
+      <premise>5</premise>
+    </step>
+    <step linenum="7">
+      <raw>(((A ∧ ¬(((A ∧ B) ∨ (¬A ∧ ¬B)))) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((B ∧ ¬(((B ∧ A) ∨ (¬B ∧ ¬A)))) ∨ (¬B ∧ ¬(¬(((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>DOUBLENEGATION_EQUIV</rule>
+      <premise>6</premise>
+    </step>
+    <step linenum="8">
+      <raw>(((A ∧ ¬(((A ∧ B) ∨ (¬A ∧ ¬B)))) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((B ∧ ¬(((B ∧ A) ∨ (¬B ∧ ¬A)))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DOUBLENEGATION_EQUIV</rule>
+      <premise>7</premise>
+    </step>
+    <step linenum="9">
+      <raw>(((A ∧ (¬((A ∧ B)) ∧ ¬((¬A ∧ ¬B)))) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((B ∧ ¬(((B ∧ A) ∨ (¬B ∧ ¬A)))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DE_MORGAN</rule>
+      <premise>8</premise>
+    </step>
+    <step linenum="10">
+      <raw>(((A ∧ ((¬A ∨ ¬B) ∧ ¬((¬A ∧ ¬B)))) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((B ∧ ¬(((B ∧ A) ∨ (¬B ∧ ¬A)))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DE_MORGAN</rule>
+      <premise>9</premise>
+    </step>
+    <step linenum="11">
+      <raw>(((A ∧ ((¬A ∨ ¬B) ∧ (¬¬A ∨ ¬¬B))) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((B ∧ ¬(((B ∧ A) ∨ (¬B ∧ ¬A)))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DE_MORGAN</rule>
+      <premise>10</premise>
+    </step>
+    <step linenum="12">
+      <raw>(((A ∧ ((¬A ∨ ¬B) ∧ (¬¬A ∨ ¬¬B))) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((B ∧ (¬((B ∧ A)) ∧ ¬((¬B ∧ ¬A)))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DE_MORGAN</rule>
+      <premise>11</premise>
+    </step>
+    <step linenum="13">
+      <raw>(((A ∧ ((¬A ∨ ¬B) ∧ (¬¬A ∨ ¬¬B))) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ ¬((¬B ∧ ¬A)))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DE_MORGAN</rule>
+      <premise>12</premise>
+    </step>
+    <step linenum="14">
+      <raw>(((A ∧ ((¬A ∨ ¬B) ∧ (¬¬A ∨ ¬¬B))) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (¬¬B ∨ ¬¬A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DE_MORGAN</rule>
+      <premise>13</premise>
+    </step>
+    <step linenum="15">
+      <raw>(((A ∧ ((¬A ∨ ¬B) ∧ (A ∨ ¬¬B))) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (¬¬B ∨ ¬¬A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DOUBLENEGATION_EQUIV</rule>
+      <premise>14</premise>
+    </step>
+    <step linenum="16">
+      <raw>(((A ∧ ((¬A ∨ ¬B) ∧ (A ∨ B))) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (¬¬B ∨ ¬¬A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DOUBLENEGATION_EQUIV</rule>
+      <premise>15</premise>
+    </step>
+    <step linenum="17">
+      <raw>(((A ∧ ((¬A ∨ ¬B) ∧ (A ∨ B))) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ ¬¬A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DOUBLENEGATION_EQUIV</rule>
+      <premise>16</premise>
+    </step>
+    <step linenum="18">
+      <raw>(((A ∧ ((¬A ∨ ¬B) ∧ (A ∨ B))) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DOUBLENEGATION_EQUIV</rule>
+      <premise>17</premise>
+    </step>
+    <step linenum="19">
+      <raw>(((A ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ (((¬A ∨ ¬B) ∧ (A ∨ B)) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>18</premise>
+    </step>
+    <step linenum="20">
+      <raw>((((A ∨ ¬A) ∧ (A ∨ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ (((¬A ∨ ¬B) ∧ (A ∨ B)) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>19</premise>
+    </step>
+    <step linenum="21">
+      <raw>((((A ∨ ¬A) ∧ (A ∨ ((A ∨ (¬A ∧ ¬B)) ∧ (B ∨ (¬A ∧ ¬B))))) ∧ (((¬A ∨ ¬B) ∧ (A ∨ B)) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>20</premise>
+    </step>
+    <step linenum="22">
+      <raw>((((A ∨ ¬A) ∧ ((A ∨ (A ∨ (¬A ∧ ¬B))) ∧ (A ∨ (B ∨ (¬A ∧ ¬B))))) ∧ (((¬A ∨ ¬B) ∧ (A ∨ B)) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>21</premise>
+    </step>
+    <step linenum="23">
+      <raw>((((A ∨ ¬A) ∧ ((A ∨ ((A ∨ ¬A) ∧ (A ∨ ¬B))) ∧ (A ∨ (B ∨ (¬A ∧ ¬B))))) ∧ (((¬A ∨ ¬B) ∧ (A ∨ B)) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>22</premise>
+    </step>
+    <step linenum="24">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ (A ∨ (B ∨ (¬A ∧ ¬B))))) ∧ (((¬A ∨ ¬B) ∧ (A ∨ B)) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>23</premise>
+    </step>
+    <step linenum="25">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ (A ∨ ((B ∨ ¬A) ∧ (B ∨ ¬B))))) ∧ (((¬A ∨ ¬B) ∧ (A ∨ B)) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>24</premise>
+    </step>
+    <step linenum="26">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ (((¬A ∨ ¬B) ∧ (A ∨ B)) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>25</premise>
+    </step>
+    <step linenum="27">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ (((¬A ∨ ¬B) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((A ∨ B) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>26</premise>
+    </step>
+    <step linenum="28">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((¬A ∨ ¬B) ∨ ((A ∧ B) ∨ (¬A ∧ ¬B)))) ∧ ((A ∨ B) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>27</premise>
+    </step>
+    <step linenum="29">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((¬A ∨ ¬B) ∨ ((A ∨ (¬A ∧ ¬B)) ∧ (B ∨ (¬A ∧ ¬B))))) ∧ ((A ∨ B) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>28</premise>
+    </step>
+    <step linenum="30">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ (((¬A ∨ ¬B) ∨ (A ∨ (¬A ∧ ¬B))) ∧ ((¬A ∨ ¬B) ∨ (B ∨ (¬A ∧ ¬B))))) ∧ ((A ∨ B) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>29</premise>
+    </step>
+    <step linenum="31">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ (((¬A ∨ ¬B) ∨ ((A ∨ ¬A) ∧ (A ∨ ¬B))) ∧ ((¬A ∨ ¬B) ∨ (B ∨ (¬A ∧ ¬B))))) ∧ ((A ∨ B) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>30</premise>
+    </step>
+    <step linenum="32">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ ((¬A ∨ ¬B) ∨ (B ∨ (¬A ∧ ¬B))))) ∧ ((A ∨ B) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>31</premise>
+    </step>
+    <step linenum="33">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ ((¬A ∨ ¬B) ∨ ((B ∨ ¬A) ∧ (B ∨ ¬B))))) ∧ ((A ∨ B) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>32</premise>
+    </step>
+    <step linenum="34">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ ((A ∨ B) ∨ (¬A ∧ ((A ∧ B) ∨ (¬A ∧ ¬B)))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>33</premise>
+    </step>
+    <step linenum="35">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((A ∨ B) ∨ ((A ∧ B) ∨ (¬A ∧ ¬B)))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>34</premise>
+    </step>
+    <step linenum="36">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((A ∨ B) ∨ ((A ∨ (¬A ∧ ¬B)) ∧ (B ∨ (¬A ∧ ¬B))))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>35</premise>
+    </step>
+    <step linenum="37">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ (((A ∨ B) ∨ (A ∨ (¬A ∧ ¬B))) ∧ ((A ∨ B) ∨ (B ∨ (¬A ∧ ¬B))))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>36</premise>
+    </step>
+    <step linenum="38">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ (((A ∨ B) ∨ ((A ∨ ¬A) ∧ (A ∨ ¬B))) ∧ ((A ∨ B) ∨ (B ∨ (¬A ∧ ¬B))))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>37</premise>
+    </step>
+    <step linenum="39">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ ((A ∨ B) ∨ (B ∨ (¬A ∧ ¬B))))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>38</premise>
+    </step>
+    <step linenum="40">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ ((A ∨ B) ∨ ((B ∨ ¬A) ∧ (B ∨ ¬B))))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>39</premise>
+    </step>
+    <step linenum="41">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ ((B ∧ ((¬B ∨ ¬A) ∧ (B ∨ A))) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>40</premise>
+    </step>
+    <step linenum="42">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ ((B ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ (((¬B ∨ ¬A) ∧ (B ∨ A)) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A))))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>41</premise>
+    </step>
+    <step linenum="43">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ (B ∨ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ (((¬B ∨ ¬A) ∧ (B ∨ A)) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A))))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>42</premise>
+    </step>
+    <step linenum="44">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ (B ∨ ((B ∨ (¬B ∧ ¬A)) ∧ (A ∨ (¬B ∧ ¬A))))) ∧ (((¬B ∨ ¬A) ∧ (B ∨ A)) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A))))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>43</premise>
+    </step>
+    <step linenum="45">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ ((B ∨ (B ∨ (¬B ∧ ¬A))) ∧ (B ∨ (A ∨ (¬B ∧ ¬A))))) ∧ (((¬B ∨ ¬A) ∧ (B ∨ A)) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A))))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>44</premise>
+    </step>
+    <step linenum="46">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ ((B ∨ ((B ∨ ¬B) ∧ (B ∨ ¬A))) ∧ (B ∨ (A ∨ (¬B ∧ ¬A))))) ∧ (((¬B ∨ ¬A) ∧ (B ∨ A)) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A))))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>45</premise>
+    </step>
+    <step linenum="47">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ (((B ∨ (B ∨ ¬B)) ∧ (B ∨ (B ∨ ¬A))) ∧ (B ∨ (A ∨ (¬B ∧ ¬A))))) ∧ (((¬B ∨ ¬A) ∧ (B ∨ A)) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A))))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>46</premise>
+    </step>
+    <step linenum="48">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ (((B ∨ (B ∨ ¬B)) ∧ (B ∨ (B ∨ ¬A))) ∧ (B ∨ ((A ∨ ¬B) ∧ (A ∨ ¬A))))) ∧ (((¬B ∨ ¬A) ∧ (B ∨ A)) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A))))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>47</premise>
+    </step>
+    <step linenum="49">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ (((B ∨ (B ∨ ¬B)) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ (A ∨ ¬A))))) ∧ (((¬B ∨ ¬A) ∧ (B ∨ A)) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A))))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>48</premise>
+    </step>
+    <step linenum="50">
+      <raw>((((A ∨ ¬A) ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ (((B ∨ (B ∨ ¬B)) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ (A ∨ ¬A))))) ∧ (((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>DISTRIBUTION</rule>
+      <premise>49</premise>
+    </step>
+    <step linenum="51">
+      <raw>(((⊤ ∧ (((A ∨ (A ∨ ¬A)) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ (((B ∨ (B ∨ ¬B)) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ (A ∨ ¬A))))) ∧ (((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>50</premise>
+    </step>
+    <step linenum="52">
+      <raw>(((⊤ ∧ (((A ∨ ⊤) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ (B ∨ ¬B))))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ (((B ∨ (B ∨ ¬B)) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ (A ∨ ¬A))))) ∧ (((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>51</premise>
+    </step>
+    <step linenum="53">
+      <raw>(((⊤ ∧ (((A ∨ ⊤) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ ⊤)))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ (A ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ (((B ∨ (B ∨ ¬B)) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ (A ∨ ¬A))))) ∧ (((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>52</premise>
+    </step>
+    <step linenum="54">
+      <raw>(((⊤ ∧ (((A ∨ ⊤) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ ⊤)))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ ⊤) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ (B ∨ ¬B))))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ (((B ∨ (B ∨ ¬B)) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ (A ∨ ¬A))))) ∧ (((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>53</premise>
+    </step>
+    <step linenum="55">
+      <raw>(((⊤ ∧ (((A ∨ ⊤) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ ⊤)))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ ⊤) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ (A ∨ ¬A)) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ (((B ∨ (B ∨ ¬B)) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ (A ∨ ¬A))))) ∧ (((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>54</premise>
+    </step>
+    <step linenum="56">
+      <raw>(((⊤ ∧ (((A ∨ ⊤) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ ⊤)))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ ⊤) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ ⊤) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ (B ∨ ¬B))))))) ∧ (((B ∨ ¬B) ∧ (((B ∨ (B ∨ ¬B)) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ (A ∨ ¬A))))) ∧ (((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>55</premise>
+    </step>
+    <step linenum="57">
+      <raw>(((⊤ ∧ (((A ∨ ⊤) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ ⊤)))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ ⊤) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ ⊤) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ ⊤)))))) ∧ (((B ∨ ¬B) ∧ (((B ∨ (B ∨ ¬B)) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ (A ∨ ¬A))))) ∧ (((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>56</premise>
+    </step>
+    <step linenum="58">
+      <raw>(((⊤ ∧ (((A ∨ ⊤) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ ⊤)))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ ⊤) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ ⊤) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ ⊤)))))) ∧ ((⊤ ∧ (((B ∨ (B ∨ ¬B)) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ (A ∨ ¬A))))) ∧ (((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>57</premise>
+    </step>
+    <step linenum="59">
+      <raw>(((⊤ ∧ (((A ∨ ⊤) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ ⊤)))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ ⊤) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ ⊤) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ ⊤)))))) ∧ ((⊤ ∧ (((B ∨ ⊤) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ (A ∨ ¬A))))) ∧ (((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>58</premise>
+    </step>
+    <step linenum="60">
+      <raw>(((⊤ ∧ (((A ∨ ⊤) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ ⊤)))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ ⊤) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ ⊤) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ ⊤)))))) ∧ ((⊤ ∧ (((B ∨ ⊤) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ ⊤)))) ∧ (((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>COMPLEMENT</rule>
+      <premise>59</premise>
+    </step>
+    <step linenum="61">
+      <raw>(((((A ∨ ⊤) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ ⊤))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ ⊤) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ ⊤) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ ⊤)))))) ∧ ((⊤ ∧ (((B ∨ ⊤) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ ⊤)))) ∧ (((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>IDENTITY</rule>
+      <premise>60</premise>
+    </step>
+    <step linenum="62">
+      <raw>(((((A ∨ ⊤) ∧ (A ∨ (A ∨ ¬B))) ∧ ((A ∨ (B ∨ ¬A)) ∧ (A ∨ ⊤))) ∧ ((((¬A ∨ ¬B) ∨ ¬A) ∧ ((((¬A ∨ ¬B) ∨ ⊤) ∧ ((¬A ∨ ¬B) ∨ (A ∨ ¬B))) ∧ (((¬A ∨ ¬B) ∨ (B ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)))) ∧ (((A ∨ B) ∨ ¬A) ∧ ((((A ∨ B) ∨ ⊤) ∧ ((A ∨ B) ∨ (A ∨ ¬B))) ∧ (((A ∨ B) ∨ (B ∨ ¬A)) ∧ ((A ∨ B) ∨ ⊤)))))) ∧ ((((B ∨ ⊤) ∧ (B ∨ (B ∨ ¬A))) ∧ ((B ∨ (A ∨ ¬B)) ∧ (B ∨ ⊤))) ∧ (((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))))</raw>
+      <rule>IDENTITY</rule>
+      <premise>61</premise>
+    </step>
+    <step linenum="63">
+      <raw>((((((((((((((((((((A ∨ ⊤) ∧ ((A ∨ A) ∨ ¬B)) ∧ ((A ∨ B) ∨ ¬A)) ∧ (A ∨ ⊤)) ∧ ((¬A ∨ ¬B) ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)) ∧ (((¬A ∨ ¬B) ∨ A) ∨ ¬B)) ∧ (((¬A ∨ ¬B) ∨ B) ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)) ∧ ((A ∨ B) ∨ ¬A)) ∧ ((A ∨ B) ∨ ⊤)) ∧ (((A ∨ B) ∨ A) ∨ ¬B)) ∧ (((A ∨ B) ∨ B) ∨ ¬A)) ∧ ((A ∨ B) ∨ ⊤)) ∧ (B ∨ ⊤)) ∧ ((B ∨ B) ∨ ¬A)) ∧ ((B ∨ A) ∨ ¬B)) ∧ (B ∨ ⊤)) ∧ ((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A))))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>ASSOCIATION</rule>
+      <premise>62</premise>
+    </step>
+    <step linenum="64">
+      <raw>((((((((((((((((((((A ∨ ⊤) ∧ (A ∨ ¬B)) ∧ ((A ∨ B) ∨ ¬A)) ∧ (A ∨ ⊤)) ∧ ((¬A ∨ ¬B) ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)) ∧ (((¬A ∨ ¬B) ∨ A) ∨ ¬B)) ∧ (((¬A ∨ ¬B) ∨ B) ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)) ∧ ((A ∨ B) ∨ ¬A)) ∧ ((A ∨ B) ∨ ⊤)) ∧ (((A ∨ B) ∨ A) ∨ ¬B)) ∧ (((A ∨ B) ∨ B) ∨ ¬A)) ∧ ((A ∨ B) ∨ ⊤)) ∧ (B ∨ ⊤)) ∧ ((B ∨ B) ∨ ¬A)) ∧ ((B ∨ A) ∨ ¬B)) ∧ (B ∨ ⊤)) ∧ ((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A))))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>ABSORPTION</rule>
+      <premise>63</premise>
+    </step>
+    <step linenum="65">
+      <raw>((((((((((((((((((((A ∨ ⊤) ∧ (A ∨ ¬B)) ∧ ((A ∨ B) ∨ ¬A)) ∧ (A ∨ ⊤)) ∧ ((¬A ∨ ¬B) ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)) ∧ (((¬A ∨ ¬B) ∨ A) ∨ ¬B)) ∧ (((¬A ∨ ¬B) ∨ B) ∨ ¬A)) ∧ ((¬A ∨ ¬B) ∨ ⊤)) ∧ ((A ∨ B) ∨ ¬A)) ∧ ((A ∨ B) ∨ ⊤)) ∧ (((A ∨ B) ∨ A) ∨ ¬B)) ∧ (((A ∨ B) ∨ B) ∨ ¬A)) ∧ ((A ∨ B) ∨ ⊤)) ∧ (B ∨ ⊤)) ∧ (B ∨ ¬A)) ∧ ((B ∨ A) ∨ ¬B)) ∧ (B ∨ ⊤)) ∧ ((¬B ∨ ¬A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A))))) ∧ ((B ∨ A) ∨ (¬B ∧ ((B ∧ A) ∨ (¬B ∧ ¬A)))))</raw>
+      <rule>ABSORPTION</rule>
+      <premise>64</premise>
+    </step>
+  </proof>
+</bram>
