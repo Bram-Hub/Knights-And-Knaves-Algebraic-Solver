@@ -82,10 +82,7 @@ export function PuzzleDetail({ puzzle }: Props) {
       </div>
 
       <div className={styles.actions}>
-        {/* Static mode: show download once loaded */}
-        {IS_STATIC && !solving && !error && solution && (
-          <DownloadButton puzzleId={puzzle.id} />
-        )}
+        {/* Download .bram only available in local API mode */}
         {IS_STATIC && solving && (
           <span className={styles.solveHint}>Loading solution…</span>
         )}

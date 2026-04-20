@@ -114,6 +114,8 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, default=PUZZLE_LIMIT,
                         help="Number of puzzles to generate (default: 100)")
+    parser.add_argument("--no-bram", action="store_true",
+                        help="Skip .bram file generation (saves ~100 MB for Vercel)")
     args = parser.parse_args()
 
     logic = json.loads(LOGIC_PATH.read_text(encoding="utf-8"))
@@ -121,7 +123,8 @@ def main() -> None:
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "solutions").mkdir(exist_ok=True)
-    (OUT_DIR / "bram").mkdir(exist_ok=True)
+    if not args.no_bram:
+        (OUT_DIR / "bram").mkdir(exist_ok=True)
 
     puzzle_list = []
 
@@ -150,8 +153,9 @@ def main() -> None:
                 json.dumps(solution, ensure_ascii=False, indent=2), encoding="utf-8"
             )
 
-            bram_xml = _build_bram_xml(puzzle, steps, sym)
-            (OUT_DIR / "bram" / f"{pid}.bram").write_text(bram_xml, encoding="utf-8")
+            if not args.no_bram:
+                bram_xml = _build_bram_xml(puzzle, steps, sym)
+                (OUT_DIR / "bram" / f"{pid}.bram").write_text(bram_xml, encoding="utf-8")
 
             puzzle_list.append({
                 "id": pid,
