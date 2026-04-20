@@ -13,7 +13,7 @@ export function DownloadButton({ puzzleId }: Props) {
   async function handleClick() {
     setState('loading');
     try {
-      const res = await fetch(`/api/bram/${puzzleId}`);
+      const res = await fetch(`/data/bram/${puzzleId}.bram`);
       if (!res.ok) throw new Error('Download failed');
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);

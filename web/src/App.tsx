@@ -12,7 +12,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/puzzles')
+    fetch('/data/puzzles.json')
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json() as Promise<PuzzleSummary[]>;

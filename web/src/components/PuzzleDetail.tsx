@@ -9,47 +9,28 @@ interface Props {
   puzzle: PuzzleSummary;
 }
 
-async function fetchSolution(puzzleId: number): Promise<SolveResult> {
-  const res = await fetch(`/api/solve/${puzzleId}`, { method: 'POST' });
-  if (!res.ok) throw new Error(`Server error ${res.status}`);
-  const data = await res.json();
-
-  if (data.status === 'done') return data as SolveResult;
-
-  // Poll until done
-  while (true) {
-    await new Promise((r) => setTimeout(r, 600));
-    const poll = await fetch(`/api/solve/${puzzleId}/status`);
-    if (!poll.ok) throw new Error(`Poll error ${poll.status}`);
-    const status = await poll.json();
-    if (status.status === 'done') return status as SolveResult;
-    if (status.status === 'error') throw new Error(status.detail ?? 'Solver error');
-  }
-}
-
 export function PuzzleDetail({ puzzle }: Props) {
   const [solution, setSolution] = useState<SolveResult | null>(null);
-  const [solving, setSolving] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (puzzle.solved) handleSolve();
-  }, []);
-
-  async function handleSolve() {
-    setSolving(true);
+    setLoading(true);
     setError(null);
-    try {
-      const data = await fetchSolution(puzzle.id);
-      setSolution(data);
-    } catch (e) {
-      setError(String(e));
-    } finally {
-      setSolving(false);
-    }
-  }
-
-  const isSolved = puzzle.solved || solution != null;
+    fetch(`/data/solutions/${puzzle.id}.json`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`Solution not found (HTTP ${r.status})`);
+        return r.json() as Promise<SolveResult>;
+      })
+      .then((data) => {
+        setSolution(data);
+        setLoading(false);
+      })
+      .catch((e) => {
+        setError(String(e));
+        setLoading(false);
+      });
+  }, [puzzle.id]);
 
   return (
     <div className={styles.container}>
@@ -73,28 +54,8 @@ export function PuzzleDetail({ puzzle }: Props) {
       </div>
 
       <div className={styles.actions}>
-        {!isSolved && (
-          <button className={styles.solveBtn} onClick={handleSolve} disabled={solving}>
-            {solving ? <span className={styles.spinner}>Solving…</span> : 'Solve'}
-          </button>
-        )}
-        {isSolved && (
-          <>
-            {!solution && (
-              <button className={styles.solveBtn} onClick={handleSolve} disabled={solving}>
-                {solving ? <span className={styles.spinner}>Solving…</span> : 'Re-solve'}
-              </button>
-            )}
-            <DownloadButton puzzleId={puzzle.id} />
-          </>
-        )}
-        {solving && (
-          <span className={styles.solveHint}>
-            {puzzle.people.length >= 3
-              ? 'Complex puzzle — may take a few seconds…'
-              : ''}
-          </span>
-        )}
+        {!loading && !error && <DownloadButton puzzleId={puzzle.id} />}
+        {loading && <span className={styles.solveHint}>Loading solution…</span>}
         {error && <span className={styles.error}>{error}</span>}
       </div>
 
