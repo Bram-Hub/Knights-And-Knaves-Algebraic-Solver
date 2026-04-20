@@ -9,6 +9,24 @@ interface Props {
   puzzle: PuzzleSummary;
 }
 
+async function fetchSolution(puzzleId: number): Promise<SolveResult> {
+  const res = await fetch(`/api/solve/${puzzleId}`, { method: 'POST' });
+  if (!res.ok) throw new Error(`Server error ${res.status}`);
+  const data = await res.json();
+
+  if (data.status === 'done') return data as SolveResult;
+
+  // Poll until done
+  while (true) {
+    await new Promise((r) => setTimeout(r, 600));
+    const poll = await fetch(`/api/solve/${puzzleId}/status`);
+    if (!poll.ok) throw new Error(`Poll error ${poll.status}`);
+    const status = await poll.json();
+    if (status.status === 'done') return status as SolveResult;
+    if (status.status === 'error') throw new Error(status.detail ?? 'Solver error');
+  }
+}
+
 export function PuzzleDetail({ puzzle }: Props) {
   const [solution, setSolution] = useState<SolveResult | null>(null);
   const [solving, setSolving] = useState(false);
@@ -22,9 +40,7 @@ export function PuzzleDetail({ puzzle }: Props) {
     setSolving(true);
     setError(null);
     try {
-      const res = await fetch(`/api/solve/${puzzle.id}`, { method: 'POST' });
-      if (!res.ok) throw new Error(`Server error ${res.status}`);
-      const data: SolveResult = await res.json();
+      const data = await fetchSolution(puzzle.id);
       setSolution(data);
     } catch (e) {
       setError(String(e));
@@ -59,18 +75,25 @@ export function PuzzleDetail({ puzzle }: Props) {
       <div className={styles.actions}>
         {!isSolved && (
           <button className={styles.solveBtn} onClick={handleSolve} disabled={solving}>
-            {solving ? 'Solving…' : 'Solve'}
+            {solving ? <span className={styles.spinner}>Solving…</span> : 'Solve'}
           </button>
         )}
         {isSolved && (
           <>
             {!solution && (
               <button className={styles.solveBtn} onClick={handleSolve} disabled={solving}>
-                {solving ? 'Solving…' : 'Re-solve'}
+                {solving ? <span className={styles.spinner}>Solving…</span> : 'Re-solve'}
               </button>
             )}
             <DownloadButton puzzleId={puzzle.id} />
           </>
+        )}
+        {solving && (
+          <span className={styles.solveHint}>
+            {puzzle.people.length >= 3
+              ? 'Complex puzzle — may take a few seconds…'
+              : ''}
+          </span>
         )}
         {error && <span className={styles.error}>{error}</span>}
       </div>

@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+import asyncio
 import base64
 import hashlib
 import json
 import sys
+import threading
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -22,8 +26,14 @@ LOGIC_PATH = ROOT / "data" / "knights_and_knaves_logic.json"
 SOLUTIONS_PATH = ROOT / "data" / "knights_and_knaves_solutions.json"
 ARIS_VERSION = "0.1.0"
 
-app = FastAPI(title="Knights & Knaves Solver")
+_executor = ThreadPoolExecutor(max_workers=4)
+_pending: dict[int, asyncio.Future] = {}
+_cache_lock = threading.Lock()
 
+
+# ---------------------------------------------------------------------------
+# Data helpers
+# ---------------------------------------------------------------------------
 
 def _load_logic() -> dict:
     return json.loads(LOGIC_PATH.read_text(encoding="utf-8"))
@@ -121,14 +131,95 @@ def _build_bram_xml(puzzle: dict) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Endpoints
+# Core solve logic (runs in thread pool)
 # ---------------------------------------------------------------------------
 
+def _do_solve(puzzle_id: int) -> dict:
+    """Solve a puzzle and persist to cache. Returns the response payload."""
+    logic = _load_logic()
+    matches = [p for p in logic.get("puzzles", []) if p["id"] == puzzle_id]
+    if not matches:
+        raise ValueError(f"Puzzle {puzzle_id} not found")
+    puzzle = matches[0]
+    constraints = puzzle["constraints"]
+    people = puzzle["people"]
+
+    # Only compute compact steps here — aris_steps generated lazily on bram download
+    _, equiv_steps = build_steps(constraints, compact=True)
+    assignments = [
+        {person: ("knight" if is_knight else "knave") for person, is_knight in sol.items()}
+        for sol in _solve_puzzle(people, constraints)
+    ]
+
+    entry = {
+        "id": puzzle_id,
+        "people": people,
+        "equivalence_steps": equiv_steps,
+        "assignments": assignments,
+        # aris_steps intentionally omitted — generated lazily on first .bram download
+    }
+
+    with _cache_lock:
+        solutions = _load_solutions()
+        if "puzzles" not in solutions:
+            solutions["puzzles"] = []
+        # Preserve aris_steps if already cached from a prior bram download
+        existing = next((p for p in solutions["puzzles"] if p["id"] == puzzle_id), None)
+        if existing and "aris_steps" in existing:
+            entry["aris_steps"] = existing["aris_steps"]
+        solutions["puzzles"] = [p for p in solutions["puzzles"] if p["id"] != puzzle_id]
+        solutions["puzzles"].append(entry)
+        _save_solutions(solutions)
+
+    sym = _symbol_map(people)
+    return {
+        "status": "done",
+        "id": puzzle_id,
+        "people": people,
+        "equivalence_steps": equiv_steps,
+        "symbol_map": sym,
+        "assignments": assignments,
+    }
+
+
+def _precompute_all() -> None:
+    """Background task: solve all unsolved puzzles at startup (compact steps only)."""
+    logic = _load_logic()
+    with _cache_lock:
+        solutions = _load_solutions()
+        solved_ids = {p["id"] for p in solutions.get("puzzles", []) if "assignments" in p}
+
+    for puzzle in logic.get("puzzles", []):
+        if puzzle["id"] not in solved_ids:
+            try:
+                _do_solve(puzzle["id"])
+            except Exception:
+                pass  # skip puzzles that fail (e.g. unsupported syntax)
+
+
+# ---------------------------------------------------------------------------
+# App lifecycle
+# ---------------------------------------------------------------------------
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    loop = asyncio.get_event_loop()
+    loop.run_in_executor(_executor, _precompute_all)
+    yield
+
+
+app = FastAPI(title="Knights & Knaves Solver", lifespan=lifespan)
+
+
+# ---------------------------------------------------------------------------
+# Endpoints
+# ---------------------------------------------------------------------------
 
 @app.get("/api/puzzles")
 def list_puzzles():
     logic = _load_logic()
-    solutions = _load_solutions()
+    with _cache_lock:
+        solutions = _load_solutions()
     solved_ids = {p["id"] for p in solutions.get("puzzles", [])}
 
     result = []
@@ -148,18 +239,15 @@ def list_puzzles():
 
 
 @app.post("/api/solve/{puzzle_id}")
-def solve_puzzle(puzzle_id: int):
-    logic = _load_logic()
-    matches = [p for p in logic.get("puzzles", []) if p["id"] == puzzle_id]
-    if not matches:
-        raise HTTPException(status_code=404, detail=f"Puzzle {puzzle_id} not found")
-    puzzle = matches[0]
-
-    solutions = _load_solutions()
+async def solve_puzzle_endpoint(puzzle_id: int):
+    # Return from cache immediately if available
+    with _cache_lock:
+        solutions = _load_solutions()
     cached = next((p for p in solutions.get("puzzles", []) if p["id"] == puzzle_id), None)
     if cached and "assignments" in cached:
         sym = _symbol_map(cached["people"])
         return {
+            "status": "done",
             "id": cached["id"],
             "people": cached["people"],
             "equivalence_steps": cached["equivalence_steps"],
@@ -167,64 +255,127 @@ def solve_puzzle(puzzle_id: int):
             "assignments": cached["assignments"],
         }
 
-    constraints = puzzle["constraints"]
-    people = puzzle["people"]
-    _, equiv_steps = build_steps(constraints, compact=True)
-    _, aris_steps = build_steps(constraints, compact=False)
-    assignments = [
-        {person: ("knight" if is_knight else "knave") for person, is_knight in sol.items()}
-        for sol in _solve_puzzle(people, constraints)
-    ]
+    # Cached steps exist but assignments missing — compute assignments cheaply via SAT
+    if cached and "equivalence_steps" in cached:
+        logic = _load_logic()
+        puzzle = next((p for p in logic.get("puzzles", []) if p["id"] == puzzle_id), None)
+        if puzzle:
+            assignments = [
+                {person: ("knight" if is_knight else "knave") for person, is_knight in sol.items()}
+                for sol in _solve_puzzle(puzzle["people"], puzzle["constraints"])
+            ]
+            cached["assignments"] = assignments
+            with _cache_lock:
+                solutions = _load_solutions()
+                solutions["puzzles"] = [p for p in solutions["puzzles"] if p["id"] != puzzle_id]
+                solutions["puzzles"].append(cached)
+                _save_solutions(solutions)
+            sym = _symbol_map(cached["people"])
+            return {
+                "status": "done",
+                "id": cached["id"],
+                "people": cached["people"],
+                "equivalence_steps": cached["equivalence_steps"],
+                "symbol_map": sym,
+                "assignments": assignments,
+            }
 
-    entry = {
-        "id": puzzle_id,
-        "people": people,
-        "equivalence_steps": equiv_steps,
-        "aris_steps": aris_steps,
-        "assignments": assignments,
-    }
-    if "puzzles" not in solutions:
-        solutions["puzzles"] = []
-    # Replace existing entry if present (e.g. cache missing assignments field)
-    solutions["puzzles"] = [p for p in solutions["puzzles"] if p["id"] != puzzle_id]
-    solutions["puzzles"].append(entry)
-    _save_solutions(solutions)
+    # Verify puzzle exists
+    logic = _load_logic()
+    if not any(p["id"] == puzzle_id for p in logic.get("puzzles", [])):
+        raise HTTPException(status_code=404, detail=f"Puzzle {puzzle_id} not found")
 
-    sym = _symbol_map(people)
-    return {
-        "id": puzzle_id,
-        "people": people,
-        "equivalence_steps": equiv_steps,
-        "symbol_map": sym,
-        "assignments": assignments,
-    }
+    # If already being solved by precompute or a prior request, report pending
+    if puzzle_id in _pending and not _pending[puzzle_id].done():
+        return {"status": "pending", "id": puzzle_id}
+
+    # Kick off solve in thread pool
+    loop = asyncio.get_event_loop()
+    future = loop.run_in_executor(_executor, _do_solve, puzzle_id)
+    _pending[puzzle_id] = future
+    return {"status": "pending", "id": puzzle_id}
+
+
+@app.get("/api/solve/{puzzle_id}/status")
+async def solve_status(puzzle_id: int):
+    # Check cache first — precompute task may have finished even if our future is still running
+    with _cache_lock:
+        solutions = _load_solutions()
+    cached = next((p for p in solutions.get("puzzles", []) if p["id"] == puzzle_id), None)
+    if cached and "assignments" in cached:
+        sym = _symbol_map(cached["people"])
+        _pending.pop(puzzle_id, None)
+        return {
+            "status": "done",
+            "id": cached["id"],
+            "people": cached["people"],
+            "equivalence_steps": cached["equivalence_steps"],
+            "symbol_map": sym,
+            "assignments": cached["assignments"],
+        }
+
+    # Check in-flight future
+    if puzzle_id in _pending:
+        future = _pending[puzzle_id]
+        if future.done():
+            try:
+                result = future.result()
+                return result
+            except Exception as e:
+                return {"status": "error", "detail": str(e)}
+        return {"status": "pending", "id": puzzle_id}
+
+    # Fall back to cache
+    with _cache_lock:
+        solutions = _load_solutions()
+    cached = next((p for p in solutions.get("puzzles", []) if p["id"] == puzzle_id), None)
+    if cached and "assignments" in cached:
+        sym = _symbol_map(cached["people"])
+        return {
+            "status": "done",
+            "id": cached["id"],
+            "people": cached["people"],
+            "equivalence_steps": cached["equivalence_steps"],
+            "symbol_map": sym,
+            "assignments": cached["assignments"],
+        }
+
+    raise HTTPException(status_code=404, detail=f"Puzzle {puzzle_id} not solved yet")
 
 
 @app.get("/api/bram/{puzzle_id}")
-def download_bram(puzzle_id: int):
-    solutions = _load_solutions()
+async def download_bram(puzzle_id: int):
+    with _cache_lock:
+        solutions = _load_solutions()
     cached = next((p for p in solutions.get("puzzles", []) if p["id"] == puzzle_id), None)
 
+    # Solve first if not cached at all
     if not cached:
         logic = _load_logic()
         matches = [p for p in logic.get("puzzles", []) if p["id"] == puzzle_id]
         if not matches:
             raise HTTPException(status_code=404, detail=f"Puzzle {puzzle_id} not found")
-        puzzle = matches[0]
-        constraints = puzzle["constraints"]
-        people = puzzle["people"]
-        _, equiv_steps = build_steps(constraints, compact=True)
-        _, aris_steps = build_steps(constraints, compact=False)
-        cached = {
-            "id": puzzle_id,
-            "people": people,
-            "equivalence_steps": equiv_steps,
-            "aris_steps": aris_steps,
-        }
-        if "puzzles" not in solutions:
-            solutions["puzzles"] = []
-        solutions["puzzles"].append(cached)
-        _save_solutions(solutions)
+        loop = asyncio.get_event_loop()
+        cached_payload = await loop.run_in_executor(_executor, _do_solve, puzzle_id)
+        with _cache_lock:
+            solutions = _load_solutions()
+        cached = next((p for p in solutions.get("puzzles", []) if p["id"] == puzzle_id), None)
+
+    # Generate aris_steps lazily if missing (first .bram download)
+    if "aris_steps" not in cached:
+        logic = _load_logic()
+        puzzle = next((p for p in logic.get("puzzles", []) if p["id"] == puzzle_id), None)
+        if puzzle:
+            loop = asyncio.get_event_loop()
+            _, aris_steps = await loop.run_in_executor(
+                _executor, lambda: build_steps(puzzle["constraints"], compact=False)
+            )
+            cached["aris_steps"] = aris_steps
+            with _cache_lock:
+                solutions = _load_solutions()
+                solutions["puzzles"] = [p for p in solutions["puzzles"] if p["id"] != puzzle_id]
+                solutions["puzzles"].append(cached)
+                _save_solutions(solutions)
 
     xml_text = _build_bram_xml(cached)
     return Response(
