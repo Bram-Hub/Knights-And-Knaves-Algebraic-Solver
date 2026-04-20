@@ -3,6 +3,7 @@ import type { PuzzleSummary } from './types';
 import { PuzzleList } from './components/PuzzleList';
 import { PuzzleDetail } from './components/PuzzleDetail';
 import { LandingPage } from './components/LandingPage';
+import { IS_STATIC } from './config';
 import styles from './App.module.css';
 
 export default function App() {
@@ -12,7 +13,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/data/puzzles.json')
+    fetch(IS_STATIC ? '/data/puzzles.json' : '/api/puzzles')
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json() as Promise<PuzzleSummary[]>;

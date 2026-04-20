@@ -3,34 +3,62 @@ import type { PuzzleSummary, SolveResult } from '../types';
 import { ProofSteps } from './ProofSteps';
 import { Solution } from './Solution';
 import { DownloadButton } from './DownloadButton';
+import { IS_STATIC } from '../config';
 import styles from './PuzzleDetail.module.css';
 
 interface Props {
   puzzle: PuzzleSummary;
 }
 
+async function fetchStatic(puzzleId: number): Promise<SolveResult> {
+  const res = await fetch(`/data/solutions/${puzzleId}.json`);
+  if (!res.ok) throw new Error(`Solution not found (HTTP ${res.status})`);
+  return res.json();
+}
+
+async function fetchFromApi(puzzleId: number): Promise<SolveResult> {
+  const res = await fetch(`/api/solve/${puzzleId}`, { method: 'POST' });
+  if (!res.ok) throw new Error(`Server error ${res.status}`);
+  const data = await res.json();
+  if (data.status === 'done') return data as SolveResult;
+
+  // Poll until done
+  while (true) {
+    await new Promise((r) => setTimeout(r, 600));
+    const poll = await fetch(`/api/solve/${puzzleId}/status`);
+    if (!poll.ok) throw new Error(`Poll error ${poll.status}`);
+    const status = await poll.json();
+    if (status.status === 'done') return status as SolveResult;
+    if (status.status === 'error') throw new Error(status.detail ?? 'Solver error');
+  }
+}
+
 export function PuzzleDetail({ puzzle }: Props) {
   const [solution, setSolution] = useState<SolveResult | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [solving, setSolving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setLoading(true);
+    // Static mode: always auto-load. API mode: auto-load only if already solved.
+    if (IS_STATIC || puzzle.solved) handleSolve();
+  }, []);
+
+  async function handleSolve() {
+    setSolving(true);
     setError(null);
-    fetch(`/data/solutions/${puzzle.id}.json`)
-      .then((r) => {
-        if (!r.ok) throw new Error(`Solution not found (HTTP ${r.status})`);
-        return r.json() as Promise<SolveResult>;
-      })
-      .then((data) => {
-        setSolution(data);
-        setLoading(false);
-      })
-      .catch((e) => {
-        setError(String(e));
-        setLoading(false);
-      });
-  }, [puzzle.id]);
+    try {
+      const data = IS_STATIC
+        ? await fetchStatic(puzzle.id)
+        : await fetchFromApi(puzzle.id);
+      setSolution(data);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setSolving(false);
+    }
+  }
+
+  const isSolved = puzzle.solved || solution != null;
 
   return (
     <div className={styles.container}>
@@ -54,8 +82,36 @@ export function PuzzleDetail({ puzzle }: Props) {
       </div>
 
       <div className={styles.actions}>
-        {!loading && !error && <DownloadButton puzzleId={puzzle.id} />}
-        {loading && <span className={styles.solveHint}>Loading solution…</span>}
+        {/* Static mode: just show download once loaded */}
+        {IS_STATIC && !solving && !error && solution && (
+          <DownloadButton puzzleId={puzzle.id} />
+        )}
+        {IS_STATIC && solving && (
+          <span className={styles.solveHint}>Loading solution…</span>
+        )}
+
+        {/* API mode: show solve / re-solve button */}
+        {!IS_STATIC && !isSolved && (
+          <button className={styles.solveBtn} onClick={handleSolve} disabled={solving}>
+            {solving ? <span className={styles.spinner}>Solving…</span> : 'Solve'}
+          </button>
+        )}
+        {!IS_STATIC && isSolved && (
+          <>
+            {!solution && (
+              <button className={styles.solveBtn} onClick={handleSolve} disabled={solving}>
+                {solving ? <span className={styles.spinner}>Solving…</span> : 'Re-solve'}
+              </button>
+            )}
+            <DownloadButton puzzleId={puzzle.id} />
+          </>
+        )}
+        {!IS_STATIC && solving && (
+          <span className={styles.solveHint}>
+            {puzzle.people.length >= 3 ? 'Complex puzzle — may take a few seconds…' : ''}
+          </span>
+        )}
+
         {error && <span className={styles.error}>{error}</span>}
       </div>
 
