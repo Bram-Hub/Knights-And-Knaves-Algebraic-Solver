@@ -1,13 +1,18 @@
-"""Pre-generate static JSON and .bram files for the first 100 puzzles.
+"""Pre-generate static JSON and .bram files for the first N puzzles.
 
 Outputs to web/public/data/:
   puzzles.json          — puzzle list (id, people, utterances, solved)
   solutions/{id}.json   — per-puzzle solution + proof steps
   bram/{id}.bram        — Aris-compatible proof file
+
+Usage:
+  python3 scripts/pregenerate.py            # generate all 100 (for Vercel)
+  python3 scripts/pregenerate.py --limit 10 # quick local dev run
 """
 
 from __future__ import annotations
 
+import argparse
 import base64
 import hashlib
 import json
@@ -106,8 +111,13 @@ def _build_bram_xml(puzzle: dict, aris_steps: list, sym: dict) -> str:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--limit", type=int, default=PUZZLE_LIMIT,
+                        help="Number of puzzles to generate (default: 100)")
+    args = parser.parse_args()
+
     logic = json.loads(LOGIC_PATH.read_text(encoding="utf-8"))
-    puzzles = logic["puzzles"][:PUZZLE_LIMIT]
+    puzzles = logic["puzzles"][:args.limit]
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "solutions").mkdir(exist_ok=True)
@@ -117,7 +127,7 @@ def main() -> None:
 
     for i, puzzle in enumerate(puzzles):
         pid = puzzle["id"]
-        print(f"[{i+1:3d}/{PUZZLE_LIMIT}] Puzzle {pid} ({', '.join(puzzle['people'])})…", end=" ", flush=True)
+        print(f"[{i+1:3d}/{len(puzzles)}] Puzzle {pid} ({', '.join(puzzle['people'])})…", end=" ", flush=True)
         try:
             constraints = puzzle["constraints"]
             people = puzzle["people"]
@@ -171,7 +181,7 @@ def main() -> None:
         json.dumps(puzzle_list, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     solved = sum(1 for p in puzzle_list if p["solved"])
-    print(f"\nDone — {solved}/{PUZZLE_LIMIT} puzzles pre-generated → {OUT_DIR}")
+    print(f"\nDone — {solved}/{len(puzzles)} puzzles pre-generated → {OUT_DIR}")
 
 
 if __name__ == "__main__":
