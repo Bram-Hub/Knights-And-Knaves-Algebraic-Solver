@@ -3,9 +3,7 @@
   <program>Aris</program>
   <version>0.1.0</version>
   <metadata>
-    <author>mikehalpern</author>
-    <created>2026-04-20T00:39:55Z</created>
-    <modified>2026-04-20T00:39:55Z</modified>
+    <author>ARIS-YEW-UI</author>
     <hash>rALF9uZt8kSgxeFogautaV1FqLSWY0RH0LjW8mL5FVU=</hash>
   </metadata>
   <proof id="0">
@@ -407,8 +405,5 @@
       <rule>IDEMPOTENCE</rule>
       <premise>78</premise>
     </step>
-    <goal>
-      <raw>(¬A ∧ ¬B)</raw>
-    </goal>
   </proof>
 </bram>

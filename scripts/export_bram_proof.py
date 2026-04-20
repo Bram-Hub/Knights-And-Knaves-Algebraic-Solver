@@ -7,11 +7,13 @@ import argparse
 import hashlib
 import base64
 import json
+import sys
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
 from pathlib import Path
 
-ARIS_VERSION = "0.1.0"
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from scripts.solve_knights_knaves import validate_proof_steps
 
 
 def indent(elem: ET.Element, level: int = 0) -> None:
@@ -85,44 +87,36 @@ def main() -> None:
     if not matches:
         raise SystemExit(f"Puzzle {args.problem} not found in {args.input}")
     puzzle = matches[0]
+    valid, error = validate_proof_steps(puzzle["equivalence_steps"])
+    if not valid:
+        raise SystemExit(f"Refusing to export invalid ARIS proof for puzzle {args.problem}: {error}")
     symbol_map = build_symbol_map(puzzle["people"])
 
     output_path = args.output or Path(f"data/bram/puzzle_{args.problem}.bram")
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
     root = ET.Element("bram")
     program = ET.SubElement(root, "program")
     program.text = "Aris"
     version = ET.SubElement(root, "version")
-    version.text = ARIS_VERSION
+    version.text = "0.1.0"
 
     metadata = ET.SubElement(root, "metadata")
-    author_el = ET.SubElement(metadata, "author")
-    author_el.text = args.author
-    created_el = ET.SubElement(metadata, "created")
-    created_el.text = now
-    modified_el = ET.SubElement(metadata, "modified")
-    modified_el.text = now
+    author = ET.SubElement(metadata, "author")
+    author.text = "ARIS-YEW-UI"
     hash_el = ET.SubElement(metadata, "hash")
     hash_input = json.dumps(puzzle, sort_keys=True).encode("utf-8")
     hash_el.text = base64.b64encode(hashlib.sha256(hash_input).digest()).decode("ascii")
 
     proof = ET.SubElement(root, "proof", {"id": "0"})
 
-    # aris_steps are uncompacted (one rule application per step), required for
-    # Aris to validate each step. equivalence_steps may have intermediate steps
-    # removed by compaction, creating invalid multi-step jumps in Aris.
-    steps = puzzle.get("aris_steps") or puzzle["equivalence_steps"]
-
     linenum = 0
     assumption = ET.SubElement(proof, "assumption", {"linenum": str(linenum)})
     a_raw = ET.SubElement(assumption, "raw")
-    a_raw.text = remap_formula_text(steps[0]["formula"], symbol_map)
+    a_raw.text = remap_formula_text(puzzle["equivalence_steps"][0]["formula"], symbol_map)
 
     prev_line = linenum
-    for step in steps[1:]:
+    for step in puzzle["equivalence_steps"][1:]:
         linenum += 1
         step_el = ET.SubElement(proof, "step", {"linenum": str(linenum)})
 
@@ -138,12 +132,6 @@ def main() -> None:
             premise.text = str(premise_ref)
         prev_line = linenum
 
-    # Final goal: the last step's formula is the proven result.
-    final_formula = remap_formula_text(steps[-1]["formula"], symbol_map)
-    goal_el = ET.SubElement(proof, "goal")
-    goal_raw = ET.SubElement(goal_el, "raw")
-    goal_raw.text = final_formula
-
     indent(root)
     xml_body = ET.tostring(root, encoding="unicode")
     xml_text = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + xml_body + "\n"
@@ -151,7 +139,6 @@ def main() -> None:
 
     print(f"Wrote {output_path}")
     print("Symbol map:", ", ".join(f"{p}->{s}" for p, s in symbol_map.items()))
-    print("Goal:", final_formula)
 
 
 if __name__ == "__main__":

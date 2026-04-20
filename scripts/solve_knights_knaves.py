@@ -4,16 +4,26 @@
 from __future__ import annotations
 
 import argparse
+import heapq
 import itertools
 import json
 from collections import deque
 from copy import deepcopy
+from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 Expr = dict[str, Any]
 Step = dict[str, str]
+
+
+@dataclass(frozen=True)
+class RuleSpec:
+    name: str
+    description: str
+    matcher: Any
+    local_ops: frozenset[str] | None = None
 
 
 def mk(op: str, *args: Expr) -> Expr:
@@ -300,10 +310,6 @@ def rule_demorgan(expr: Expr) -> Expr | None:
             mk("not", deepcopy(inner["args"][0])),
             mk("not", deepcopy(inner["args"][1])),
         )
-    if inner["op"] == "true":
-        return {"op": "false", "args": []}
-    if inner["op"] == "false":
-        return {"op": "true", "args": []}
     return None
 
 
@@ -328,6 +334,26 @@ def rule_distribution_dnf(expr: Expr) -> Expr | None:
             mk("and", deepcopy(left), deepcopy(right["args"][0])),
             mk("and", deepcopy(left), deepcopy(right["args"][1])),
         )
+    return None
+
+
+def rule_distribution(expr: Expr) -> Expr | None:
+    if expr["op"] == "and":
+        left, right = expr["args"]
+        if right["op"] == "or":
+            return mk(
+                "or",
+                mk("and", deepcopy(left), deepcopy(right["args"][0])),
+                mk("and", deepcopy(left), deepcopy(right["args"][1])),
+            )
+    if expr["op"] == "or":
+        left, right = expr["args"]
+        if right["op"] == "and":
+            return mk(
+                "and",
+                mk("or", deepcopy(left), deepcopy(right["args"][0])),
+                mk("or", deepcopy(left), deepcopy(right["args"][1])),
+            )
     return None
 
 
@@ -456,6 +482,15 @@ def structural_fingerprint(expr: Expr) -> tuple[Any, ...]:
     if op == "not":
         return ("not", structural_fingerprint(expr["args"][0]))
     return (op, structural_fingerprint(expr["args"][0]), structural_fingerprint(expr["args"][1]))
+
+
+def formula_size(expr: Expr) -> int:
+    return 1 + sum(formula_size(arg) for arg in expr.get("args", []))
+
+
+def local_search_heuristic(expr: Expr, target_rule_fn: Any) -> int:
+    direct_matches = count_direct_rule_matches(expr, target_rule_fn)
+    return formula_size(expr) - (10 * direct_matches)
 
 
 def get_subexpr(expr: Expr, path: tuple[int, ...]) -> Expr:
@@ -755,7 +790,128 @@ def simplify_one_term(current: Expr, steps: list[Step], term_path: tuple[int, ..
     return current, changed_any
 
 
+def simplification_action_priority(expr: Expr, action_kind: str, path: tuple[int, ...]) -> tuple[int, int, tuple[int, ...]]:
+    base_priority = {
+        "term_complement": 0,
+        "term_false": 1,
+        "or_true": 2,
+        "or_false": 3,
+        "or_duplicate": 4,
+        "term_true": 5,
+        "term_duplicate": 6,
+        "or_adjacency": 7,
+        "or_absorption": 8,
+        "reduction": 9,
+    }
+    subtree_size = formula_size(get_subexpr(expr, path)) if path or expr else formula_size(expr)
+    return (base_priority[action_kind], subtree_size, path)
+
+
+def ranked_simplification_actions(expr: Expr) -> list[tuple[str, tuple[int, ...]]]:
+    heap: list[tuple[tuple[int, int, tuple[int, ...]], str, tuple[int, ...]]] = []
+
+    for term_path in disjunct_paths(expr):
+        term = get_subexpr(expr, term_path)
+        if term["op"] != "and":
+            continue
+        if term_has_complement(term):
+            heapq.heappush(
+                heap,
+                (simplification_action_priority(expr, "term_complement", term_path), "term", term_path),
+            )
+        if term_has_false(term):
+            heapq.heappush(
+                heap,
+                (simplification_action_priority(expr, "term_false", term_path), "term", term_path),
+            )
+        if term_has_true(term):
+            heapq.heappush(
+                heap,
+                (simplification_action_priority(expr, "term_true", term_path), "term", term_path),
+            )
+        if term_has_duplicate(term):
+            heapq.heappush(
+                heap,
+                (simplification_action_priority(expr, "term_duplicate", term_path), "term", term_path),
+            )
+
+    or_actions = [
+        ("or_true", "ANNIHILATION", "Apply annihilation.", rule_annihilation, "true"),
+        ("or_false", "IDENTITY", "Apply identity.", rule_identity, "false"),
+        ("or_duplicate", "IDEMPOTENCE", "Apply idempotence.", rule_idempotence, "duplicate"),
+        ("or_adjacency", "ADJACENCY", "Apply adjacency.", rule_adjacency, "adjacency"),
+        ("or_absorption", "ABSORPTION", "Apply absorption.", rule_absorption, "absorption"),
+    ]
+    for action_kind, _, _, _, finder_kind in or_actions:
+        path = find_or_rule_path(expr, finder_kind)
+        if path is not None:
+            heapq.heappush(
+                heap,
+                (simplification_action_priority(expr, action_kind, path), action_kind, path),
+            )
+
+    if expr["op"] == "and":
+        heapq.heappush(heap, (simplification_action_priority(expr, "reduction", ()), "reduction", ()))
+
+    return [(action_kind, path) for _, action_kind, path in heapq.nsmallest(len(heap), heap)]
+
+
 def prepare_subtree_for_rule(
+    expr: Expr,
+    target_rule_fn: Any,
+    *,
+    local_ops: set[str] | None,
+    max_steps: int = 6,
+    max_nodes: int = 256,
+) -> tuple[Expr, list[dict[str, Any]], bool]:
+    _, available = rewrite_once(expr, target_rule_fn)
+    if available:
+        return deepcopy(expr), [], True
+
+    queue: list[tuple[int, int, int, Expr, list[dict[str, Any]]]] = []
+    counter = 0
+    heapq.heappush(
+        queue,
+        (local_search_heuristic(expr, target_rule_fn), 0, counter, deepcopy(expr), []),
+    )
+    seen = {structural_fingerprint(expr)}
+    visited_nodes = 0
+
+    while queue:
+        _, cost, _, candidate, path_steps = heapq.heappop(queue)
+        visited_nodes += 1
+        if visited_nodes > max_nodes:
+            break
+        if len(path_steps) >= max_steps:
+            continue
+        for rule_name, description, variant in enumerate_structural_rewrites(candidate, local_ops):
+            fingerprint = structural_fingerprint(variant)
+            if fingerprint in seen:
+                continue
+            seen.add(fingerprint)
+            next_steps = [
+                *path_steps,
+                {"rule": rule_name, "description": description, "expr": deepcopy(variant)},
+            ]
+            _, available = rewrite_once(variant, target_rule_fn)
+            if available:
+                return variant, next_steps, True
+            counter += 1
+            next_cost = cost + 1
+            priority = next_cost + local_search_heuristic(variant, target_rule_fn)
+            heapq.heappush(queue, (priority, next_cost, counter, variant, next_steps))
+    fallback = prepare_subtree_for_rule_deterministic(
+        expr,
+        target_rule_fn,
+        local_ops=local_ops,
+        max_steps=max_steps,
+    )
+    if fallback[2]:
+        return fallback
+    return deepcopy(expr), [], False
+
+
+def prepare_subtree_for_rule_deterministic(
     expr: Expr,
     target_rule_fn: Any,
     *,
@@ -809,6 +965,7 @@ def apply_rule_at_path(
     *,
     local_ops: set[str] | None,
     max_steps: int = 6,
+    max_nodes: int = 256,
 ) -> tuple[Expr, bool]:
     subtree = get_subexpr(current, path)
     prepared, prep_steps, exposed = prepare_subtree_for_rule(
@@ -816,6 +973,7 @@ def apply_rule_at_path(
         rule_fn,
         local_ops=local_ops,
         max_steps=max_steps,
+        max_nodes=max_nodes,
     )
     if not exposed:
         return current, False
@@ -849,14 +1007,10 @@ def rule_complement(expr: Expr) -> Expr | None:
 def rule_identity(expr: Expr) -> Expr | None:
     if expr["op"] == "and":
         left, right = expr["args"]
-        if left["op"] == "true":
-            return deepcopy(right)
         if right["op"] == "true":
             return deepcopy(left)
     if expr["op"] == "or":
         left, right = expr["args"]
-        if left["op"] == "false":
-            return deepcopy(right)
         if right["op"] == "false":
             return deepcopy(left)
     return None
@@ -940,6 +1094,51 @@ def rule_adjacency(expr: Expr) -> Expr | None:
     return None
 
 
+RULE_SPECS: dict[str, RuleSpec] = {
+    "BICONDITIONAL_EQUIVALENCE": RuleSpec(
+        "BICONDITIONAL_EQUIVALENCE",
+        "Replace biconditionals with equivalent disjunctive cases.",
+        rule_biconditional_equivalence,
+    ),
+    "DOUBLENEGATION_EQUIV": RuleSpec(
+        "DOUBLENEGATION_EQUIV",
+        "Eliminate double negations.",
+        rule_double_negation,
+    ),
+    "DE_MORGAN": RuleSpec(
+        "DE_MORGAN",
+        "Push negations inward using De Morgan's law.",
+        rule_demorgan,
+    ),
+    "DISTRIBUTION": RuleSpec(
+        "DISTRIBUTION",
+        "Apply distribution.",
+        rule_distribution,
+        frozenset({"and", "or"}),
+    ),
+    "COMMUTATION": RuleSpec(
+        "COMMUTATION",
+        "Swap statements within the same level of parentheses.",
+        rule_commutation,
+        frozenset({"and", "or"}),
+    ),
+    "ASSOCIATION": RuleSpec(
+        "ASSOCIATION",
+        "Regroup conjunctions and disjunctions.",
+        rule_association,
+        frozenset({"and", "or"}),
+    ),
+    "COMPLEMENT": RuleSpec("COMPLEMENT", "Apply complement.", rule_complement),
+    "IDENTITY": RuleSpec("IDENTITY", "Apply identity.", rule_identity),
+    "ANNIHILATION": RuleSpec("ANNIHILATION", "Apply annihilation.", rule_annihilation),
+    "INVERSE": RuleSpec("INVERSE", "Replace negated constants with their complements.", rule_inverse),
+    "IDEMPOTENCE": RuleSpec("IDEMPOTENCE", "Apply idempotence.", rule_idempotence),
+    "ABSORPTION": RuleSpec("ABSORPTION", "Apply absorption.", rule_absorption),
+    "REDUCTION": RuleSpec("REDUCTION", "Apply reduction.", rule_reduction),
+    "ADJACENCY": RuleSpec("ADJACENCY", "Apply adjacency.", rule_adjacency),
+}
+
+
 def canonicalize_conjunction(expr: Expr) -> Expr:
     items = flatten_and(expr)
     literal_counts: dict[str, int] = {}
@@ -996,6 +1195,16 @@ def normalize_to_nnf(expr: Expr) -> tuple[Expr, list[Step]]:
 
         current, new_steps = apply_rule_until_fixed(
             current,
+            "INVERSE",
+            "Replace negated constants with their complements.",
+            rule_inverse,
+        )
+        if new_steps:
+            changed = True
+            steps.extend(new_steps)
+
+        current, new_steps = apply_rule_until_fixed(
+            current,
             "DE_MORGAN",
             "Push negations inward using De Morgan's law.",
             rule_demorgan,
@@ -1009,6 +1218,16 @@ def normalize_to_nnf(expr: Expr) -> tuple[Expr, list[Step]]:
             "DOUBLENEGATION_EQUIV",
             "Eliminate double negations.",
             rule_double_negation,
+        )
+        if new_steps:
+            changed = True
+            steps.extend(new_steps)
+
+        current, new_steps = apply_rule_until_fixed(
+            current,
+            "INVERSE",
+            "Replace negated constants with their complements.",
+            rule_inverse,
         )
         if new_steps:
             changed = True
@@ -1067,119 +1286,80 @@ def simplify_dnf(expr: Expr) -> tuple[Expr, list[Step]]:
 
         changed = False
 
-        path = find_term_rule_path(current, "complement")
-        if path is not None:
-            current, changed = simplify_one_term(current, steps, containing_term_path(current, path))
-        if changed:
-            continue
-
-        path = find_term_rule_path(current, "false")
-        if path is not None:
-            current, changed = simplify_one_term(current, steps, containing_term_path(current, path))
-        if changed:
-            continue
-
-        path = find_or_rule_path(current, "true")
-        if path is not None:
-            current, changed = apply_rule_at_path(
-                current,
-                steps,
-                path,
-                "ANNIHILATION",
-                "Apply annihilation.",
-                rule_annihilation,
-                local_ops={"or"},
-                max_steps=6,
-            )
-        if changed:
-            continue
-
-        path = find_or_rule_path(current, "false")
-        if path is not None:
-            current, changed = apply_rule_at_path(
-                current,
-                steps,
-                path,
-                "IDENTITY",
-                "Apply identity.",
-                rule_identity,
-                local_ops={"or"},
-                max_steps=6,
-            )
-        if changed:
-            continue
-
-        path = find_or_rule_path(current, "duplicate")
-        if path is not None:
-            current, changed = apply_rule_at_path(
-                current,
-                steps,
-                path,
-                "IDEMPOTENCE",
-                "Apply idempotence.",
-                rule_idempotence,
-                local_ops={"or"},
-                max_steps=6,
-            )
-        if changed:
-            continue
-
-        path = find_term_rule_path(current, "true")
-        if path is not None:
-            current, changed = simplify_one_term(current, steps, containing_term_path(current, path))
-        if changed:
-            continue
-
-        path = find_term_rule_path(current, "duplicate")
-        if path is not None:
-            current, changed = simplify_one_term(current, steps, containing_term_path(current, path))
-        if changed:
-            continue
-
-        path = find_or_rule_path(current, "adjacency")
-        if path is not None:
-            current, changed = apply_rule_at_path(
-                current,
-                steps,
-                path,
-                "ADJACENCY",
-                "Apply adjacency.",
-                rule_adjacency,
-                local_ops={"or"},
-                max_steps=6,
-            )
-        if changed:
-            continue
-
-        path = find_or_rule_path(current, "absorption")
-        if path is not None:
-            current, changed = apply_rule_at_path(
-                current,
-                steps,
-                path,
-                "ABSORPTION",
-                "Apply absorption.",
-                rule_absorption,
-                local_ops={"or"},
-                max_steps=6,
-            )
-        if changed:
-            continue
-
-        if current["op"] == "and":
-            current, changed = apply_rule_at_path(
-                current,
-                steps,
-                (),
-                "REDUCTION",
-                "Apply reduction.",
-                rule_reduction,
-                local_ops={"and"},
-                max_steps=5,
-            )
+        for action_kind, path in ranked_simplification_actions(current):
+            if action_kind == "term":
+                current, changed = simplify_one_term(current, steps, path)
+            elif action_kind == "or_true":
+                current, changed = apply_rule_at_path(
+                    current,
+                    steps,
+                    path,
+                    "ANNIHILATION",
+                    "Apply annihilation.",
+                    rule_annihilation,
+                    local_ops={"or"},
+                    max_steps=6,
+                )
+            elif action_kind == "or_false":
+                current, changed = apply_rule_at_path(
+                    current,
+                    steps,
+                    path,
+                    "IDENTITY",
+                    "Apply identity.",
+                    rule_identity,
+                    local_ops={"or"},
+                    max_steps=6,
+                )
+            elif action_kind == "or_duplicate":
+                current, changed = apply_rule_at_path(
+                    current,
+                    steps,
+                    path,
+                    "IDEMPOTENCE",
+                    "Apply idempotence.",
+                    rule_idempotence,
+                    local_ops={"or"},
+                    max_steps=6,
+                )
+            elif action_kind == "or_adjacency":
+                current, changed = apply_rule_at_path(
+                    current,
+                    steps,
+                    path,
+                    "ADJACENCY",
+                    "Apply adjacency.",
+                    rule_adjacency,
+                    local_ops={"or"},
+                    max_steps=6,
+                )
+            elif action_kind == "or_absorption":
+                current, changed = apply_rule_at_path(
+                    current,
+                    steps,
+                    path,
+                    "ABSORPTION",
+                    "Apply absorption.",
+                    rule_absorption,
+                    local_ops={"or"},
+                    max_steps=6,
+                )
+            elif action_kind == "reduction":
+                current, changed = apply_rule_at_path(
+                    current,
+                    steps,
+                    path,
+                    "REDUCTION",
+                    "Apply reduction.",
+                    rule_reduction,
+                    local_ops={"and"},
+                    max_steps=5,
+                )
             if changed:
-                changed = True
-                continue
+                break
+
+        if changed:
+            continue
 
         break
 
@@ -1441,7 +1621,7 @@ def compact_equivalence_steps(
     return compacted
 
 
-def build_steps(constraints: list[Expr], *, compact: bool = True) -> tuple[Expr, list[Step]]:
+def build_steps(constraints: list[Expr]) -> tuple[Expr, list[Step]]:
     combined = make_and([deepcopy(constraint) for constraint in constraints])
     steps: list[Step] = [
         {
@@ -1469,8 +1649,6 @@ def build_steps(constraints: list[Expr], *, compact: bool = True) -> tuple[Expr,
     current, new_steps = simplify_dnf(current)
     steps.extend(new_steps)
 
-    if compact:
-        return current, compact_equivalence_steps(steps)
     return current, steps
 
 
@@ -1584,6 +1762,105 @@ def parse_formula_text(text: str) -> Expr:
     return FormulaParser(tokenize_formula(text)).parse()
 
 
+def enumerate_rule_rewrites(expr: Expr, rule_name: str) -> list[Expr]:
+    if rule_name not in RULE_SPECS:
+        return []
+    if rule_name == "COMMUTATION":
+        return [variant for name, _, variant in enumerate_structural_rewrites(expr) if name == "COMMUTATION"]
+    if rule_name == "ASSOCIATION":
+        return [variant for name, _, variant in enumerate_structural_rewrites(expr) if name == "ASSOCIATION"]
+
+    rule_fn = RULE_SPECS[rule_name].matcher
+    rewrites: list[Expr] = []
+
+    rewritten = rule_fn(expr)
+    if rewritten is not None:
+        rewrites.append(rewritten)
+
+    op = expr["op"]
+    if op in {"knight", "true", "false"}:
+        return rewrites
+    if op == "not":
+        for child_variant in enumerate_rule_rewrites(expr["args"][0], rule_name):
+            rewrites.append(mk("not", child_variant))
+        return rewrites
+
+    left, right = expr["args"]
+    for left_variant in enumerate_rule_rewrites(left, rule_name):
+        rewrites.append({"op": op, "args": [left_variant, right]})
+    for right_variant in enumerate_rule_rewrites(right, rule_name):
+        rewrites.append({"op": op, "args": [left, right_variant]})
+    return rewrites
+
+
+def root_rule_variants(expr: Expr, rule_name: str) -> list[Expr]:
+    if rule_name == "COMMUTATION":
+        swapped = commutation_variant(expr)
+        return [] if swapped is None else [swapped]
+    if rule_name == "ASSOCIATION":
+        return association_variants(expr)
+    if rule_name not in RULE_SPECS:
+        return []
+    rewritten = RULE_SPECS[rule_name].matcher(expr)
+    return [] if rewritten is None else [rewritten]
+
+
+def is_one_local_rule_rewrite(previous: Expr, current: Expr, rule_name: str) -> bool:
+    if any(variant == current for variant in root_rule_variants(previous, rule_name)):
+        return True
+
+    previous_op = previous["op"]
+    if previous_op in {"knight", "true", "false"}:
+        return False
+    if current["op"] != previous_op:
+        return False
+
+    if previous_op == "not":
+        return is_one_local_rule_rewrite(previous["args"][0], current["args"][0], rule_name)
+
+    previous_left, previous_right = previous["args"]
+    current_left, current_right = current["args"]
+    left_changed = previous_left != current_left
+    right_changed = previous_right != current_right
+
+    if left_changed and not right_changed:
+        return is_one_local_rule_rewrite(previous_left, current_left, rule_name)
+    if right_changed and not left_changed:
+        return is_one_local_rule_rewrite(previous_right, current_right, rule_name)
+    return False
+
+
+def validate_proof_steps(steps: list[Step]) -> tuple[bool, str | None]:
+    if not steps:
+        return False, "proof has no steps"
+    if steps[0]["rule"] != "START":
+        return False, "line 0 must be START"
+
+    formulas: list[Expr] = []
+    try:
+        formulas = [parse_formula_text(step["formula"]) for step in steps]
+    except ValueError as exc:
+        return False, f"failed to parse proof formula: {exc}"
+
+    for line_number in range(1, len(steps)):
+        rule = steps[line_number]["rule"]
+        previous = formulas[line_number - 1]
+        current = formulas[line_number]
+        if not is_one_local_rule_rewrite(previous, current, rule):
+            return (
+                False,
+                f"line {line_number}: {rule} is not one local ARIS rewrite from "
+                f"{steps[line_number - 1]['formula']} to {steps[line_number]['formula']}",
+            )
+    return True, None
+
+
+def assert_valid_proof_steps(steps: list[Step]) -> None:
+    valid, error = validate_proof_steps(steps)
+    if not valid:
+        raise ValueError(error or "invalid proof")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -1645,7 +1922,6 @@ def main() -> None:
         constraints = puzzle["constraints"]
         assignments = solve_puzzle(people, constraints)
         final_formula, steps = build_steps(constraints)
-        _, aris_steps = build_steps(constraints, compact=False)
 
         if len(assignments) == 1:
             unique_count += 1
@@ -1655,7 +1931,6 @@ def main() -> None:
                 "id": puzzle["id"],
                 "people": people,
                 "equivalence_steps": steps,
-                "aris_steps": aris_steps,
                 "final_formula": expr_to_str(final_formula),
                 "solution_count": len(assignments),
                 "solution_literals": [as_literal_conjunction(solution, people) for solution in assignments],

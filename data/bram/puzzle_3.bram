@@ -3,10 +3,8 @@
   <program>Aris</program>
   <version>0.1.0</version>
   <metadata>
-    <author>mikehalpern</author>
-    <created>2026-04-20T00:39:55Z</created>
-    <modified>2026-04-20T00:39:55Z</modified>
-    <hash>yAIxWZCwurl4Rf+MJLW8ERz49I1+j0skJG7o1ShbZ0Y=</hash>
+    <author>ARIS-YEW-UI</author>
+    <hash>Zlqs0oG0bLxJgvNontW5sWnDTd5B47beKUlu5wXEVTQ=</hash>
   </metadata>
   <proof id="0">
     <assumption linenum="0">
@@ -278,42 +276,49 @@
       <premise>52</premise>
     </step>
     <step linenum="54">
-      <raw>((((¬B ∧ ¬B) ∧ (A ∧ ¬B)) ∨ ⊥) ∨ (⊥ ∨ ⊥))</raw>
+      <raw>(⊥ ∨ (((¬B ∧ ¬B) ∧ (A ∧ ¬B)) ∨ (⊥ ∨ ⊥)))</raw>
       <rule>IDENTITY</rule>
       <premise>53</premise>
     </step>
     <step linenum="55">
-      <raw>(((¬B ∧ ¬B) ∧ (A ∧ ¬B)) ∨ ⊥)</raw>
+      <raw>(⊥ ∨ (((¬B ∧ ¬B) ∧ (A ∧ ¬B)) ∨ ⊥))</raw>
       <rule>IDENTITY</rule>
       <premise>54</premise>
     </step>
     <step linenum="56">
-      <raw>((¬B ∧ ¬B) ∧ (A ∧ ¬B))</raw>
+      <raw>(⊥ ∨ ((¬B ∧ ¬B) ∧ (A ∧ ¬B)))</raw>
       <rule>IDENTITY</rule>
       <premise>55</premise>
     </step>
     <step linenum="57">
-      <raw>(¬B ∧ (A ∧ ¬B))</raw>
-      <rule>IDEMPOTENCE</rule>
+      <raw>(((¬B ∧ ¬B) ∧ (A ∧ ¬B)) ∨ ⊥)</raw>
+      <rule>COMMUTATION</rule>
       <premise>56</premise>
     </step>
     <step linenum="58">
-      <raw>((A ∧ ¬B) ∧ ¬B)</raw>
-      <rule>COMMUTATION</rule>
+      <raw>((¬B ∧ ¬B) ∧ (A ∧ ¬B))</raw>
+      <rule>IDENTITY</rule>
       <premise>57</premise>
     </step>
     <step linenum="59">
-      <raw>(A ∧ (¬B ∧ ¬B))</raw>
-      <rule>ASSOCIATION</rule>
+      <raw>(¬B ∧ (A ∧ ¬B))</raw>
+      <rule>IDEMPOTENCE</rule>
       <premise>58</premise>
     </step>
     <step linenum="60">
-      <raw>(A ∧ ¬B)</raw>
-      <rule>IDEMPOTENCE</rule>
+      <raw>((A ∧ ¬B) ∧ ¬B)</raw>
+      <rule>COMMUTATION</rule>
       <premise>59</premise>
     </step>
-    <goal>
+    <step linenum="61">
+      <raw>(A ∧ (¬B ∧ ¬B))</raw>
+      <rule>ASSOCIATION</rule>
+      <premise>60</premise>
+    </step>
+    <step linenum="62">
       <raw>(A ∧ ¬B)</raw>
-    </goal>
+      <rule>IDEMPOTENCE</rule>
+      <premise>61</premise>
+    </step>
   </proof>
 </bram>

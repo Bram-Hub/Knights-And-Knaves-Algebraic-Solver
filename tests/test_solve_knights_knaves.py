@@ -7,21 +7,26 @@ from scripts.convert_knights_knaves import parse_expr
 from scripts.solve_knights_knaves import (
     as_answer_text,
     atom,
+    assert_valid_proof_steps,
     build_steps,
     canonicalize_dnf,
     format_final_answer,
     enumerate_structural_rewrites,
     eval_expr,
+    expr_to_str,
     is_dnf,
     make_and,
     make_or,
     mk,
     parse_formula_text,
+    prepare_subtree_for_rule,
     rewrite_once,
     rule_annihilation,
     rule_association,
     rule_commutation,
+    rule_complement,
     simplify_dnf,
+    validate_proof_steps,
     verify_step_equivalence,
 )
 
@@ -127,6 +132,41 @@ class SolveKnightsKnavesTests(unittest.TestCase):
             self.assertTrue(changed, f"{rule} step should apply to previous formula")
             self.assertEqual(expected, current, f"{rule} step should be a single local rewrite")
 
+    def test_rule_shape_validator_accepts_listed_aris_rules(self) -> None:
+        a = atom("A")
+        b = atom("B")
+        c = atom("C")
+        cases = [
+            ("ASSOCIATION", mk("and", a, mk("and", b, c)), mk("and", mk("and", a, b), c)),
+            ("COMMUTATION", mk("or", a, b), mk("or", b, a)),
+            ("IDEMPOTENCE", mk("and", a, a), a),
+            ("DE_MORGAN", mk("not", mk("or", a, b)), mk("and", mk("not", a), mk("not", b))),
+            ("DISTRIBUTION", mk("and", a, mk("or", b, c)), mk("or", mk("and", a, b), mk("and", a, c))),
+            ("DOUBLENEGATION_EQUIV", mk("not", mk("not", a)), a),
+            ("COMPLEMENT", mk("and", a, mk("not", a)), {"op": "false", "args": []}),
+            ("IDENTITY", mk("or", a, {"op": "false", "args": []}), a),
+            ("ANNIHILATION", mk("and", a, {"op": "false", "args": []}), {"op": "false", "args": []}),
+            ("INVERSE", mk("not", {"op": "true", "args": []}), {"op": "false", "args": []}),
+            ("ABSORPTION", mk("or", a, mk("and", a, b)), a),
+            ("REDUCTION", mk("and", a, mk("or", mk("not", a), b)), mk("and", a, b)),
+            ("ADJACENCY", mk("or", mk("and", a, b), mk("and", a, mk("not", b))), a),
+        ]
+        for rule, previous, current in cases:
+            steps = [
+                {"rule": "START", "description": "", "formula": expr_to_str(previous)},
+                {"rule": rule, "description": "", "formula": expr_to_str(current)},
+            ]
+            self.assertEqual(validate_proof_steps(steps), (True, None), rule)
+
+    def test_rule_shape_validator_rejects_nonlocal_jump(self) -> None:
+        steps = [
+            {"rule": "START", "description": "", "formula": "(K_A ∧ (K_B ∧ K_C))"},
+            {"rule": "ASSOCIATION", "description": "", "formula": "(K_C ∧ (K_B ∧ K_A))"},
+        ]
+        valid, error = validate_proof_steps(steps)
+        self.assertFalse(valid)
+        self.assertIn("line 1", error or "")
+
     def test_puzzle_two_has_expected_unique_solution(self) -> None:
         puzzle = self.puzzles[2]
         final_formula, steps = build_steps(puzzle["constraints"])
@@ -172,11 +212,37 @@ class SolveKnightsKnavesTests(unittest.TestCase):
             elapsed = time.time() - start
             self.assertLess(elapsed, 5.0)
             self.assertTrue(verify_step_equivalence(steps))
+            assert_valid_proof_steps(steps)
 
-    def test_puzzle_two_proof_is_reasonable_length(self) -> None:
+    def test_sample_puzzle_proofs_are_aris_local(self) -> None:
+        for puzzle_id in (1, 2, 3, 4, 7):
+            _, steps = build_steps(self.puzzles[puzzle_id]["constraints"])
+            assert_valid_proof_steps(steps)
+
+    def test_puzzle_two_proof_is_uncompacted_and_valid(self) -> None:
         _, steps = build_steps(self.puzzles[2]["constraints"])
-        self.assertLessEqual(len(steps), 80)
+        self.assertGreater(len(steps), 80)
+        assert_valid_proof_steps(steps)
         self.assertNotIn("TRUTH_TABLE_DNF", [step["rule"] for step in steps])
+
+    def test_astar_local_search_falls_back_when_node_limit_is_low(self) -> None:
+        expr = make_and([atom("A"), mk("not", atom("A")), atom("B")])
+        _, normal_steps, normal_exposed = prepare_subtree_for_rule(
+            expr,
+            rule_complement,
+            local_ops={"and"},
+            max_steps=5,
+        )
+        _, fallback_steps, fallback_exposed = prepare_subtree_for_rule(
+            expr,
+            rule_complement,
+            local_ops={"and"},
+            max_steps=5,
+            max_nodes=0,
+        )
+        self.assertTrue(normal_exposed)
+        self.assertTrue(fallback_exposed)
+        self.assertLessEqual(len(normal_steps), len(fallback_steps))
 
 
 if __name__ == "__main__":

@@ -3,10 +3,8 @@
   <program>Aris</program>
   <version>0.1.0</version>
   <metadata>
-    <author>mikehalpern</author>
-    <created>2026-04-20T01:06:06Z</created>
-    <modified>2026-04-20T01:06:06Z</modified>
-    <hash>IN6lFVE8oeCh8S/KJs8rGzhCTKOWewGPBG4hk7NGD+k=</hash>
+    <author>ARIS-YEW-UI</author>
+    <hash>uFPtLwsExEcWVE0tbbOjsQ1XffiaEf1xgibCW9Nk83g=</hash>
   </metadata>
   <proof id="0">
     <assumption linenum="0">
@@ -588,62 +586,74 @@
       <premise>114</premise>
     </step>
     <step linenum="116">
-      <raw>(((⊥ ∨ ⊥) ∨ (⊥ ∨ ⊥)) ∨ (⊥ ∨ ((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A)))))</raw>
+      <raw>(⊥ ∨ ((⊥ ∨ (⊥ ∨ ⊥)) ∨ (⊥ ∨ ((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A))))))</raw>
       <rule>IDENTITY</rule>
       <premise>115</premise>
     </step>
     <step linenum="117">
-      <raw>((⊥ ∨ (⊥ ∨ ⊥)) ∨ (⊥ ∨ ((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A)))))</raw>
+      <raw>(⊥ ∨ ((⊥ ∨ ⊥) ∨ (⊥ ∨ ((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A))))))</raw>
       <rule>IDENTITY</rule>
       <premise>116</premise>
     </step>
     <step linenum="118">
-      <raw>((⊥ ∨ ⊥) ∨ (⊥ ∨ ((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A)))))</raw>
+      <raw>(⊥ ∨ (⊥ ∨ (⊥ ∨ ((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A))))))</raw>
       <rule>IDENTITY</rule>
       <premise>117</premise>
     </step>
     <step linenum="119">
-      <raw>(⊥ ∨ (⊥ ∨ ((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A)))))</raw>
-      <rule>IDENTITY</rule>
+      <raw>((⊥ ∨ ⊥) ∨ (⊥ ∨ ((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A)))))</raw>
+      <rule>ASSOCIATION</rule>
       <premise>118</premise>
     </step>
     <step linenum="120">
-      <raw>(⊥ ∨ ((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A))))</raw>
+      <raw>(⊥ ∨ (⊥ ∨ ((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A)))))</raw>
       <rule>IDENTITY</rule>
       <premise>119</premise>
     </step>
     <step linenum="121">
-      <raw>((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A)))</raw>
-      <rule>IDENTITY</rule>
+      <raw>((⊥ ∨ ⊥) ∨ ((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A))))</raw>
+      <rule>ASSOCIATION</rule>
       <premise>120</premise>
     </step>
     <step linenum="122">
-      <raw>(¬B ∧ (¬A ∧ (¬A ∧ (¬B ∧ ¬A))))</raw>
-      <rule>ASSOCIATION</rule>
+      <raw>(⊥ ∨ ((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A))))</raw>
+      <rule>IDENTITY</rule>
       <premise>121</premise>
     </step>
     <step linenum="123">
-      <raw>(¬B ∧ ((¬A ∧ ¬A) ∧ (¬B ∧ ¬A)))</raw>
-      <rule>ASSOCIATION</rule>
+      <raw>(((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A))) ∨ ⊥)</raw>
+      <rule>COMMUTATION</rule>
       <premise>122</premise>
     </step>
     <step linenum="124">
-      <raw>(¬B ∧ (¬A ∧ (¬B ∧ ¬A)))</raw>
-      <rule>IDEMPOTENCE</rule>
+      <raw>((¬B ∧ ¬A) ∧ (¬A ∧ (¬B ∧ ¬A)))</raw>
+      <rule>IDENTITY</rule>
       <premise>123</premise>
     </step>
     <step linenum="125">
-      <raw>((¬B ∧ ¬A) ∧ (¬B ∧ ¬A))</raw>
+      <raw>(¬B ∧ (¬A ∧ (¬A ∧ (¬B ∧ ¬A))))</raw>
       <rule>ASSOCIATION</rule>
       <premise>124</premise>
     </step>
     <step linenum="126">
-      <raw>(¬B ∧ ¬A)</raw>
-      <rule>IDEMPOTENCE</rule>
+      <raw>(¬B ∧ ((¬A ∧ ¬A) ∧ (¬B ∧ ¬A)))</raw>
+      <rule>ASSOCIATION</rule>
       <premise>125</premise>
     </step>
-    <goal>
+    <step linenum="127">
+      <raw>(¬B ∧ (¬A ∧ (¬B ∧ ¬A)))</raw>
+      <rule>IDEMPOTENCE</rule>
+      <premise>126</premise>
+    </step>
+    <step linenum="128">
+      <raw>((¬B ∧ ¬A) ∧ (¬B ∧ ¬A))</raw>
+      <rule>ASSOCIATION</rule>
+      <premise>127</premise>
+    </step>
+    <step linenum="129">
       <raw>(¬B ∧ ¬A)</raw>
-    </goal>
+      <rule>IDEMPOTENCE</rule>
+      <premise>128</premise>
+    </step>
   </proof>
 </bram>
