@@ -145,7 +145,7 @@ def _do_solve(puzzle_id: int) -> dict:
     people = puzzle["people"]
 
     # Only compute compact steps here — aris_steps generated lazily on bram download
-    _, equiv_steps = build_steps(constraints, compact=True)
+    _, equiv_steps = build_steps(constraints)
     assignments = [
         {person: ("knight" if is_knight else "knave") for person, is_knight in sol.items()}
         for sol in _solve_puzzle(people, constraints)
@@ -368,7 +368,7 @@ async def download_bram(puzzle_id: int):
         if puzzle:
             loop = asyncio.get_event_loop()
             _, aris_steps = await loop.run_in_executor(
-                _executor, lambda: build_steps(puzzle["constraints"], compact=False)
+                _executor, lambda: build_steps(puzzle["constraints"])
             )
             cached["aris_steps"] = aris_steps
             with _cache_lock:

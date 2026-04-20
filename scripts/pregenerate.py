@@ -122,8 +122,9 @@ def main() -> None:
             constraints = puzzle["constraints"]
             people = puzzle["people"]
 
-            _, equiv_steps = build_steps(constraints, compact=True)
-            _, aris_steps = build_steps(constraints, compact=False)
+            _, steps = build_steps(constraints)
+            equiv_steps = steps
+            aris_steps = steps
             assignments = [
                 {person: ("knight" if is_knight else "knave") for person, is_knight in sol.items()}
                 for sol in solve_puzzle(people, constraints)
