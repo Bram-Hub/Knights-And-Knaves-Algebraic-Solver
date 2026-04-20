@@ -1,13 +1,18 @@
-"""Pre-generate static JSON and .bram files for the first 100 puzzles.
+"""Pre-generate static JSON and .bram files for the first N puzzles.
 
 Outputs to web/public/data/:
   puzzles.json          — puzzle list (id, people, utterances, solved)
   solutions/{id}.json   — per-puzzle solution + proof steps
   bram/{id}.bram        — Aris-compatible proof file
+
+Usage:
+  python3 scripts/pregenerate.py            # generate all 100 (for Vercel)
+  python3 scripts/pregenerate.py --limit 10 # quick local dev run
 """
 
 from __future__ import annotations
 
+import argparse
 import base64
 import hashlib
 import json
@@ -63,7 +68,7 @@ def _indent(elem: ET.Element, level: int = 0) -> None:
         elem.tail = i
 
 
-def _build_bram_xml(puzzle: dict, aris_steps: list, sym: dict) -> str:
+def _build_bram_xml(puzzle: dict, steps: list, sym: dict) -> str:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     root = ET.Element("bram")
@@ -83,10 +88,10 @@ def _build_bram_xml(puzzle: dict, aris_steps: list, sym: dict) -> str:
 
     linenum = 0
     assumption = ET.SubElement(proof, "assumption", {"linenum": str(linenum)})
-    ET.SubElement(assumption, "raw").text = _remap(aris_steps[0]["formula"], sym)
+    ET.SubElement(assumption, "raw").text = _remap(steps[0]["formula"], sym)
 
     prev_line = linenum
-    for step in aris_steps[1:]:
+    for step in steps[1:]:
         linenum += 1
         step_el = ET.SubElement(proof, "step", {"linenum": str(linenum)})
         ET.SubElement(step_el, "raw").text = _remap(step["formula"], sym)
@@ -96,7 +101,7 @@ def _build_bram_xml(puzzle: dict, aris_steps: list, sym: dict) -> str:
             ET.SubElement(step_el, "premise").text = str(premise_ref)
         prev_line = linenum
 
-    final_formula = _remap(aris_steps[-1]["formula"], sym)
+    final_formula = _remap(steps[-1]["formula"], sym)
     goal_el = ET.SubElement(proof, "goal")
     ET.SubElement(goal_el, "raw").text = final_formula
 
@@ -106,8 +111,13 @@ def _build_bram_xml(puzzle: dict, aris_steps: list, sym: dict) -> str:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--limit", type=int, default=PUZZLE_LIMIT,
+                        help="Number of puzzles to generate (default: 100)")
+    args = parser.parse_args()
+
     logic = json.loads(LOGIC_PATH.read_text(encoding="utf-8"))
-    puzzles = logic["puzzles"][:PUZZLE_LIMIT]
+    puzzles = logic["puzzles"][:args.limit]
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "solutions").mkdir(exist_ok=True)
@@ -117,13 +127,12 @@ def main() -> None:
 
     for i, puzzle in enumerate(puzzles):
         pid = puzzle["id"]
-        print(f"[{i+1:3d}/{PUZZLE_LIMIT}] Puzzle {pid} ({', '.join(puzzle['people'])})…", end=" ", flush=True)
+        print(f"[{i+1:3d}/{len(puzzles)}] Puzzle {pid} ({', '.join(puzzle['people'])})…", end=" ", flush=True)
         try:
             constraints = puzzle["constraints"]
             people = puzzle["people"]
 
-            _, equiv_steps = build_steps(constraints, compact=True)
-            _, aris_steps = build_steps(constraints, compact=False)
+            _, steps = build_steps(constraints)
             assignments = [
                 {person: ("knight" if is_knight else "knave") for person, is_knight in sol.items()}
                 for sol in solve_puzzle(people, constraints)
@@ -133,7 +142,7 @@ def main() -> None:
             solution = {
                 "id": pid,
                 "people": people,
-                "equivalence_steps": equiv_steps,
+                "equivalence_steps": steps,
                 "symbol_map": sym,
                 "assignments": assignments,
             }
@@ -141,7 +150,7 @@ def main() -> None:
                 json.dumps(solution, ensure_ascii=False, indent=2), encoding="utf-8"
             )
 
-            bram_xml = _build_bram_xml(puzzle, aris_steps, sym)
+            bram_xml = _build_bram_xml(puzzle, steps, sym)
             (OUT_DIR / "bram" / f"{pid}.bram").write_text(bram_xml, encoding="utf-8")
 
             puzzle_list.append({
@@ -170,7 +179,7 @@ def main() -> None:
         json.dumps(puzzle_list, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     solved = sum(1 for p in puzzle_list if p["solved"])
-    print(f"\nDone — {solved}/{PUZZLE_LIMIT} puzzles pre-generated → {OUT_DIR}")
+    print(f"\nDone — {solved}/{len(puzzles)} puzzles pre-generated → {OUT_DIR}")
 
 
 if __name__ == "__main__":

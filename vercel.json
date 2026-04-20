@@ -1,5 +1,8 @@
 {
   "buildCommand": "python3 scripts/pregenerate.py && cd web && npm run build",
   "outputDirectory": "web/dist",
-  "installCommand": "cd web && npm install"
+  "installCommand": "cd web && npm install",
+  "env": {
+    "VITE_STATIC": "true"
+  }
 }

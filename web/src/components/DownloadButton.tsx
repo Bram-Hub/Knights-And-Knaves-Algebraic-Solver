@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { IS_STATIC } from '../config';
 import styles from './DownloadButton.module.css';
 
 interface Props {
@@ -13,7 +14,7 @@ export function DownloadButton({ puzzleId }: Props) {
   async function handleClick() {
     setState('loading');
     try {
-      const res = await fetch(`/data/bram/${puzzleId}.bram`);
+      const res = await fetch(IS_STATIC ? `/data/bram/${puzzleId}.bram` : `/api/bram/${puzzleId}`);
       if (!res.ok) throw new Error('Download failed');
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
