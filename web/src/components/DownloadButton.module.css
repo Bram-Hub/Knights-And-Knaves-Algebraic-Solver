@@ -1,0 +1,30 @@
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.idle {
+  background: #4a9eff;
+  color: #fff;
+}
+
+.idle:hover {
+  background: #2a7edf;
+}
+
+.loading {
+  background: #333;
+  color: #888;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.done {
+  background: #2d5a2d;
+  color: #4caf50;
+}
