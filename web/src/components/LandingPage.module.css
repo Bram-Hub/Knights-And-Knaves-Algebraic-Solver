@@ -1,0 +1,303 @@
+.page {
+  height: 100%;
+  overflow-y: auto;
+  background: #0d0d0d;
+}
+
+.content {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 48px 40px 64px;
+}
+
+/* Hero */
+.hero {
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid #222;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 12px;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #888;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.subtitle a {
+  color: #4a9eff;
+  text-decoration: none;
+}
+
+.subtitle a:hover {
+  text-decoration: underline;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 44px;
+}
+
+.section h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1e1e1e;
+  letter-spacing: -0.2px;
+}
+
+.section p {
+  font-size: 14px;
+  color: #aaa;
+  line-height: 1.7;
+  margin: 0 0 12px;
+}
+
+.section a {
+  color: #4a9eff;
+  text-decoration: none;
+}
+
+.section a:hover {
+  text-decoration: underline;
+}
+
+/* Example box */
+.example {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-top: 16px;
+}
+
+.exampleLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 12px;
+}
+
+.utterance {
+  font-size: 14px;
+  color: #ccc;
+  padding: 5px 0;
+}
+
+.utterance em {
+  color: #999;
+}
+
+.speaker {
+  font-weight: 700;
+  color: #4a9eff;
+  margin-right: 4px;
+}
+
+.exampleAnswer {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #222;
+  font-size: 13px;
+  color: #4caf50;
+  font-weight: 600;
+}
+
+/* Formula display */
+.formula {
+  display: inline-block;
+  background: #151515;
+  border: 1px solid #2a2a2a;
+  border-radius: 5px;
+  padding: 6px 14px;
+  font-size: 15px;
+  color: #c9d1d9;
+  font-family: 'Menlo', 'Consolas', monospace;
+  margin: 8px 0 14px;
+}
+
+/* How-to steps */
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.steps li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.stepNum {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  background: #1a2a3a;
+  border: 1px solid #1e3a5f;
+  color: #4a9eff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.steps div {
+  font-size: 14px;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+.steps div strong {
+  color: #ddd;
+}
+
+.steps div code {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 13px;
+  color: #c9d1d9;
+  font-family: 'Menlo', 'Consolas', monospace;
+}
+
+.inlineBadge {
+  font-size: 11px;
+  padding: 2px 7px;
+  background: #1a3a1a;
+  color: #4caf50;
+  border-radius: 10px;
+  border: 1px solid #2d5a2d;
+  font-weight: 600;
+}
+
+/* Algorithm steps */
+.algoSteps {
+  margin: 14px 0 16px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #222;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.algoSteps li {
+  padding: 14px 18px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.algoSteps li:last-child {
+  border-bottom: none;
+}
+
+.algoPhase {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4a9eff;
+  margin-bottom: 6px;
+}
+
+.algoDesc {
+  font-size: 13px;
+  color: #999;
+  line-height: 1.65;
+}
+
+.algoDesc code {
+  background: #151515;
+  border: 1px solid #2a2a2a;
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 12px;
+  color: #c9d1d9;
+  font-family: 'Menlo', 'Consolas', monospace;
+}
+
+.algoDesc strong {
+  color: #ccc;
+}
+
+.algoDesc em {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Tables */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  text-align: left;
+  padding: 8px 12px;
+  color: #666;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  border-bottom: 1px solid #222;
+}
+
+.table td {
+  padding: 9px 12px;
+  color: #aaa;
+  border-bottom: 1px solid #1a1a1a;
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table code {
+  background: #151515;
+  border: 1px solid #2a2a2a;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 12px;
+  color: #4a9eff;
+  font-family: 'Menlo', 'Consolas', monospace;
+  white-space: nowrap;
+}
+
+/* Footer */
+.footer {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid #1a1a1a;
+  font-size: 12px;
+  color: #444;
+}
+
+.footer a {
+  color: #555;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  color: #777;
+}

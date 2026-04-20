@@ -1,0 +1,81 @@
+.container {
+  margin-top: 24px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #1a1a1a;
+  font-size: 13px;
+  color: #888;
+  font-weight: 600;
+}
+
+.legend {
+  font-size: 12px;
+  color: #555;
+  font-family: monospace;
+  font-weight: 400;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.step {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 8px 14px;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.step:last-child {
+  border-bottom: none;
+}
+
+.rule {
+  font-size: 11px;
+  font-family: monospace;
+  color: #4a9eff;
+  background: #0d1f33;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 160px;
+  text-align: center;
+}
+
+.formula {
+  font-size: 13px;
+  color: #ddd;
+  word-break: break-all;
+  font-family: 'Menlo', 'Consolas', monospace;
+}
+
+.toggle {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: #1a1a1a;
+  border: none;
+  border-top: 1px solid #333;
+  color: #4a9eff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.toggle:hover {
+  background: #222;
+}

@@ -1,0 +1,97 @@
+.box {
+  background: #111;
+  border: 1px solid #2a3a2a;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #4caf50;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 14px;
+}
+
+.none {
+  font-size: 14px;
+  color: #888;
+  margin: 0;
+}
+
+.assignment {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.caseNum {
+  font-size: 12px;
+  color: #666;
+  font-weight: 600;
+}
+
+.roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.role {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.knight {
+  background: #1a3a1a;
+  border: 1px solid #2d5a2d;
+}
+
+.knight .person {
+  color: #4caf50;
+}
+
+.knight .roleName {
+  color: #4caf50;
+  opacity: 0.7;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.knave {
+  background: #3a1a1a;
+  border: 1px solid #5a2d2d;
+}
+
+.knave .person {
+  color: #f44;
+}
+
+.knave .roleName {
+  color: #f44;
+  opacity: 0.7;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sentence {
+  font-size: 14px;
+  color: #aaa;
+  margin: 4px 0 0;
+  line-height: 1.6;
+}
+
+.sentence strong {
+  color: #ddd;
+}
