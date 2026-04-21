@@ -57,7 +57,7 @@ export function ProofSteps({ steps }: Props) {
     }
     rows.push(
       <li key={i} className={styles.step}>
-        <span className={styles.rule}>{step.rule}</span>
+        <span className={styles.rule}>{step.rule === 'START' ? 'PREMISE' : step.rule}</span>
         <code className={styles.formula}>{step.formula}</code>
       </li>,
     );
