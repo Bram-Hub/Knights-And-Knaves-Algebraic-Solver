@@ -82,9 +82,11 @@ export function PuzzleDetail({ puzzle }: Props) {
       </div>
 
       <div className={styles.actions}>
-        {/* Download .bram only available in local API mode */}
         {IS_STATIC && solving && (
           <span className={styles.solveHint}>Loading solution…</span>
+        )}
+        {IS_STATIC && solution && (
+          <DownloadButton puzzleId={puzzle.id} solution={solution} />
         )}
 
         {/* API mode: show solve / re-solve button */}
@@ -100,7 +102,7 @@ export function PuzzleDetail({ puzzle }: Props) {
                 {solving ? <span className={styles.spinner}>Solving…</span> : 'Re-solve'}
               </button>
             )}
-            <DownloadButton puzzleId={puzzle.id} />
+            <DownloadButton puzzleId={puzzle.id} solution={solution ?? undefined} />
           </>
         )}
         {!IS_STATIC && solving && (

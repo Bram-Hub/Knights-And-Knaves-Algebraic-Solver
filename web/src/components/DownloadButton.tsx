@@ -1,22 +1,31 @@
 import { useState } from 'react';
+import type { SolveResult } from '../types';
 import { IS_STATIC } from '../config';
+import { buildBramXml } from '../utils/bramGenerator';
 import styles from './DownloadButton.module.css';
 
 interface Props {
   puzzleId: number;
+  solution?: SolveResult;
 }
 
 type State = 'idle' | 'loading' | 'done';
 
-export function DownloadButton({ puzzleId }: Props) {
+export function DownloadButton({ puzzleId, solution }: Props) {
   const [state, setState] = useState<State>('idle');
 
   async function handleClick() {
     setState('loading');
     try {
-      const res = await fetch(IS_STATIC ? `/data/bram/${puzzleId}.bram` : `/api/bram/${puzzleId}`);
-      if (!res.ok) throw new Error('Download failed');
-      const blob = await res.blob();
+      let blob: Blob;
+      if (IS_STATIC && solution) {
+        const xml = await buildBramXml(puzzleId, solution.equivalence_steps, solution.symbol_map);
+        blob = new Blob([xml], { type: 'application/octet-stream' });
+      } else {
+        const res = await fetch(`/api/bram/${puzzleId}`);
+        if (!res.ok) throw new Error('Download failed');
+        blob = await res.blob();
+      }
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
