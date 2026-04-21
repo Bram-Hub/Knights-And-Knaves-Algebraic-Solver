@@ -71,6 +71,7 @@
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  margin-bottom: 24px;
 }
 
 .solveBtn {
