@@ -12,17 +12,12 @@ interface Props {
 export function ProofSteps({ steps, symbolMap }: Props) {
   const [expanded, setExpanded] = useState(false);
 
-  const legend = Object.entries(symbolMap)
-    .map(([name, letter]) => `${letter} = ${name}`)
-    .join('  ·  ');
-
   const visible = expanded ? steps : steps.slice(0, PREVIEW);
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <span>Proof steps ({steps.length} total)</span>
-        {legend && <span className={styles.legend}>{legend}</span>}
       </div>
       <ol className={styles.list}>
         {visible.map((step, i) => (
