@@ -5,3 +5,4 @@ __pycache__/
 node_modules/
 web/dist/
 web/public/data/
+data/knights_and_knaves_solutions.json
