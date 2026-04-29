@@ -1,12 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-const isStatic = process.env.VITE_STATIC === 'true'
-
 export default defineConfig({
   plugins: [react()],
-  // When building for GitHub Pages the app lives at /<repo-name>/
-  base: isStatic ? '/Knights-And_Knaves_Solver/' : '/',
+  // Custom domain (kkas.bram-hub.com) serves from root — no subpath needed
+  base: '/',
   server: {
     proxy: {
       '/api': 'http://localhost:8000',
